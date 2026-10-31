@@ -1,0 +1,16 @@
+services:
+  financeiro:
+    build: .
+    container_name: financeiro
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      # Só a sua máquina acessa (127.0.0.1); a porta foge das usuais de desenvolvimento.
+      - "127.0.0.1:${APP_PORT:-47815}:47815"
+      # Porta 80 para abrir sem número na URL: http://financeiro.localhost
+      # (Chrome e Edge mandam qualquer *.localhost para esta máquina, sem mexer no arquivo hosts).
+      - "127.0.0.1:${APP_HTTP_PORT:-80}:47815"
+    volumes:
+      - ./data:/app/data
