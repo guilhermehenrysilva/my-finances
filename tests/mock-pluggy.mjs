@@ -72,6 +72,16 @@ http.createServer((req, res) => {
     const list = (txs[url.searchParams.get('accountId')] ?? []).filter((x) => x.date.slice(0, 10) >= from);
     return send(200, { results: list, page: 1, totalPages: 1, total: list.length });
   }
+  if (url.pathname === '/investments') {
+    // Nubank tem investimentos (um já resgatado); no Santander a API recusa, como num plano sem esse dado.
+    if (url.searchParams.get('itemId') !== NU) return send(403, { message: 'not allowed' });
+    const list = [
+      { id: 'inv-1', name: 'CDB Banco Exemplo', type: 'FIXED_INCOME', balance: 5000, dueDate: '2027-05-10T03:00:00.000Z', status: 'ACTIVE' },
+      { id: 'inv-2', name: 'Tesouro Selic 2029', type: 'FIXED_INCOME', subtype: 'TREASURY', balance: 3200, status: 'ACTIVE' },
+      { id: 'inv-3', name: 'Fundo resgatado', type: 'MUTUAL_FUND', balance: 0, status: 'TOTAL_WITHDRAWAL' },
+    ];
+    return send(200, { results: list, page: 1, totalPages: 1, total: list.length });
+  }
   if (url.pathname === '/bills') {
     const list = bills[url.searchParams.get('accountId')];
     return list ? send(200, { results: list }) : send(404, { message: 'not available' });

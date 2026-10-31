@@ -27,6 +27,10 @@ const FROM_TX = 'FROM transactions t JOIN accounts a ON a.id = t.account_id JOIN
 // Gasto: saídas somam; no cartão, estornos (entradas não ignoradas) abatem. Entradas na conta corrente não são gasto.
 const SPEND = `CASE WHEN t.flow = 'OUT' THEN t.amount WHEN a.type = 'CREDIT' THEN -t.amount ELSE 0 END`;
 const COUNTED = `a.hidden = 0 AND COALESCE(t.ignored_user, t.ignored_auto IS NOT NULL) = 0`;
+// Conta marcada como paga à mão sem nenhum lançamento do banco ligado a ela (ex.: paga no dinheiro, ou antes de
+// conectar a Pluggy): conta como saída do mês. Quando um lançamento aparece e é ligado à conta, ela deixa de contar
+// sozinha, para não somar duas vezes. Faturas de cartão nunca contam assim: as compras do cartão já contam.
+const MANUAL_PAID = `paid_at IS NOT NULL AND transaction_id IS NULL AND card_account_id IS NULL AND hidden = 0 AND amount > 0`;
 
 class BadRequest extends Error {}
 
@@ -140,11 +144,26 @@ api.get('/dashboard', (c) => {
     GROUP BY a.id, method
     HAVING total <> 0
     ORDER BY total DESC
-  `).all(m) as { method: Method; total: number }[];
+  `).all(m) as { account_id: string; account_label: string; account_type: string; method: Method; total: number; count: number }[];
+
+  // Cadastrado por você: contas a pagar marcadas como pagas sem lançamento do banco ligado.
+  const manualItems = db.prepare(`
+    SELECT b.id, b.description, b.amount, b.paid_at, bt.start_month, bt.end_month
+    FROM bills b LEFT JOIN bill_templates bt ON bt.id = b.template_id
+    WHERE b.id IN (SELECT id FROM bills WHERE month = ? AND ${MANUAL_PAID})
+    ORDER BY b.amount DESC, b.id
+  `).all(m) as { id: number; description: string; amount: number; paid_at: string; start_month: string | null; end_month: string | null }[];
+  const manual = manualItems.map(({ start_month, end_month, ...b }) => ({
+    ...b,
+    repeat_index: start_month && end_month ? monthsBetween(start_month, m) + 1 : null,
+    repeat_total: start_month && end_month ? monthsBetween(start_month, end_month) + 1 : null,
+  }));
 
   const byMethod = new Map<Method, number>();
   for (const g of groups) byMethod.set(g.method, (byMethod.get(g.method) ?? 0) + g.total);
-  const expenseTotal = groups.reduce((s, g) => s + g.total, 0);
+  const bankSpend = groups.reduce((s, g) => s + g.total, 0);
+  const manualSpend = manual.reduce((s, b) => s + b.amount, 0);
+  const expenseTotal = bankSpend + manualSpend;
 
   const accounts = db.prepare(`
     SELECT a.id, COALESCE(a.label, c.label) AS label, a.name, a.type, a.subtype, a.balance,
@@ -152,6 +171,31 @@ api.get('/dashboard', (c) => {
     FROM accounts a JOIN connections c ON c.item_id = a.item_id
     WHERE a.hidden = 0 ORDER BY a.type DESC, a.balance DESC
   `).all() as { type: string; balance: number }[];
+
+  // Saldos por banco: contas, cartões e investimentos de cada conexão.
+  const connections = db.prepare('SELECT item_id, label FROM connections ORDER BY created_at').all() as { item_id: string; label: string }[];
+  const accountRows = db.prepare(`
+    SELECT a.id, a.item_id, COALESCE(a.label, c.label) AS label, a.name, a.type, a.subtype, a.balance,
+      a.credit_limit, a.available_limit
+    FROM accounts a JOIN connections c ON c.item_id = a.item_id WHERE a.hidden = 0
+    ORDER BY a.type DESC, a.balance DESC
+  `).all() as { id: string; item_id: string; label: string; name: string; type: string; balance: number }[];
+  const investmentRows = db.prepare('SELECT id, item_id, name, type, subtype, balance, issuer, due_date FROM investments ORDER BY balance DESC')
+    .all() as { item_id: string; balance: number }[];
+  const banks = connections.map((cn) => {
+    const accs = accountRows.filter((a) => a.item_id === cn.item_id);
+    const invs = investmentRows.filter((i) => i.item_id === cn.item_id);
+    return {
+      itemId: cn.item_id,
+      label: cn.label,
+      accounts: accs,
+      investments: invs,
+      bankBalance: cents(accs.filter((a) => a.type === 'BANK').reduce((s, a) => s + a.balance, 0)),
+      cardOpen: cents(accs.filter((a) => a.type === 'CREDIT').reduce((s, a) => s + a.balance, 0)),
+      investmentsTotal: cents(invs.reduce((s, i) => s + i.balance, 0)),
+    };
+  }).filter((b) => b.accounts.length || b.investments.length);
+  const investmentsTotal = cents(investmentRows.reduce((s, i) => s + i.balance, 0));
 
   const bills = db.prepare('SELECT id, description, amount, due_date, paid_at, card_account_id, estimated FROM bills WHERE month = ? AND hidden = 0 ORDER BY due_date, id').all(m) as {
     amount: number | null; due_date: string; paid_at: string | null;
@@ -163,13 +207,19 @@ api.get('/dashboard', (c) => {
     income: { total: cents(incomeTotal), items: incomes },
     expenses: {
       total: cents(expenseTotal),
+      bank: cents(bankSpend),
+      manual: { total: cents(manualSpend), items: manual },
       groups,
       byMethod: [...byMethod].map(([method, total]) => ({ method, total: cents(total) })).sort((a, b) => b.total - a.total),
     },
     result: cents(incomeTotal - expenseTotal),
+    // Sem banco conectado e sem gasto de banco no mês, a tela esconde a parte "Dos bancos".
+    hasBanks: connections.length > 0 || groups.length > 0,
     accounts,
     bankTotal: cents(accounts.filter((a) => a.type === 'BANK').reduce((s, a) => s + a.balance, 0)),
     cardTotal: cents(accounts.filter((a) => a.type === 'CREDIT').reduce((s, a) => s + a.balance, 0)),
+    banks,
+    investmentsTotal,
     bills: {
       pending,
       paidCount: bills.length - pending.length,
@@ -195,14 +245,20 @@ api.get('/year', (c) => {
     WHERE substr(t.ref_month, 1, 4) = ? AND ${COUNTED}
     GROUP BY t.ref_month, method
   `).all(year) as { month: string; method: Method; total: number }[];
+  const manualPaid = db.prepare(`
+    SELECT month, SUM(amount) AS total FROM bills WHERE substr(month, 1, 4) = ? AND ${MANUAL_PAID} GROUP BY month
+  `).all(year) as { month: string; total: number }[];
 
   const incomeBy = new Map(income.map((r) => [r.month, r.total]));
-  const expenseBy = new Map<string, number>();
+  const manualBy = new Map(manualPaid.map((r) => [r.month, r.total]));
+  const expenseBy = new Map<string, number>(manualPaid.map((r) => [r.month, r.total]));
+  const bankBy = new Map<string, number>();
   const methodsBy = new Map<string, Partial<Record<Method, number>>>();
   for (const r of expenses) {
     expenseBy.set(r.month, (expenseBy.get(r.month) ?? 0) + r.total);
+    bankBy.set(r.month, (bankBy.get(r.month) ?? 0) + r.total);
     const m = methodsBy.get(r.month) ?? {};
-    m[r.method] = cents(r.total);
+    m[r.method] = cents((m[r.method] ?? 0) + r.total);
     methodsBy.set(r.month, m);
   }
   const thisMonth = today().slice(0, 7);
@@ -214,6 +270,8 @@ api.get('/year', (c) => {
       month,
       income: cents(inc ?? 0),
       expenses: cents(exp ?? 0),
+      bank: cents(bankBy.get(month) ?? 0),
+      manual: cents(manualBy.get(month) ?? 0),
       byMethod: methodsBy.get(month) ?? {},
       // Mês sem nenhum dado, ou ainda por vir (ex.: fatura futura do cartão), fica fora das linhas
       // do gráfico em vez de aparecer como zero.
@@ -223,6 +281,7 @@ api.get('/year', (c) => {
   const withData = months.filter((m) => m.hasData);
   const totalIncome = withData.reduce((s, m) => s + m.income, 0);
   const totalExpenses = withData.reduce((s, m) => s + m.expenses, 0);
+  const hasConnections = (db.prepare('SELECT COUNT(*) AS n FROM connections').get() as { n: number }).n > 0;
 
   const years = db.prepare(`
     SELECT DISTINCT substr(month, 1, 4) AS y FROM incomes
@@ -234,10 +293,13 @@ api.get('/year', (c) => {
   return c.json({
     year,
     years: yearList,
+    hasBanks: hasConnections || expenses.length > 0,
     months,
     totals: {
       income: cents(totalIncome),
       expenses: cents(totalExpenses),
+      bank: cents(withData.reduce((s, m) => s + m.bank, 0)),
+      manual: cents(withData.reduce((s, m) => s + m.manual, 0)),
       result: cents(totalIncome - totalExpenses),
       avgExpenses: cents(withData.length ? totalExpenses / withData.length : 0),
     },
@@ -355,9 +417,11 @@ api.get('/bills', (c) => {
   matchBills();
   const rows = db.prepare(`
     SELECT b.id, b.template_id, b.description, b.amount, b.due_date, b.match_text, b.paid_at, b.transaction_id,
-      b.card_account_id, b.estimated, t.description AS tx_description, t.amount AS tx_amount,
+      b.card_account_id, b.estimated, t.description AS tx_description, t.amount AS tx_amount, t.date AS tx_date,
+      COALESCE(ta.label, tc.label) AS tx_account, ta.type AS tx_account_type,
       bt.start_month, bt.end_month
     FROM bills b LEFT JOIN transactions t ON t.id = b.transaction_id LEFT JOIN bill_templates bt ON bt.id = b.template_id
+      LEFT JOIN accounts ta ON ta.id = t.account_id LEFT JOIN connections tc ON tc.item_id = ta.item_id
     WHERE b.month = ? AND b.hidden = 0 ORDER BY b.paid_at IS NOT NULL, b.due_date, b.id
   `).all(m) as ({ start_month: string | null; end_month: string | null } & Record<string, unknown>)[];
   // Conta que repete por X meses: em qual delas este mês está ("parcela 2 de 10").

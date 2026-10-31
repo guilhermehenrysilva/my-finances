@@ -5,7 +5,7 @@ export const BACKUP_FORMAT = 'financeiro-backup';
 export const BACKUP_VERSION = 1;
 
 // Ordem de inserção: quem é referenciado vem antes. A remoção usa a ordem inversa.
-const TABLES = ['settings', 'recurring_dismissed', 'connections', 'accounts', 'card_bills', 'transactions', 'incomes', 'bill_templates', 'bills'] as const;
+const TABLES = ['settings', 'recurring_dismissed', 'connections', 'accounts', 'investments', 'card_bills', 'transactions', 'incomes', 'bill_templates', 'bills'] as const;
 type Table = (typeof TABLES)[number];
 
 type Row = Record<string, unknown>;

@@ -3,6 +3,9 @@
 Este guia tem duas partes. A primeira leva os dados obtidos no [guia da Pluggy](configurar-pluggy.md) (Client ID,
 Client Secret e `itemId` de cada banco) para o app. A segunda apresenta cada tela do sistema e o que dá para fazer nela.
 
+> Vai usar sem conectar banco? Pule a Parte 1. O app funciona só com o que você cadastra em Entradas e Contas a pagar
+> (veja [Duas origens](#6-menu-mês-e-sincronização)).
+
 > Os prints usam dados simulados. Nomes, valores e `itemId` são de exemplo.
 
 ## Sumário
@@ -116,12 +119,38 @@ um mês, o seletor de mês.
   Configurações.
 - Trocar de mês pelas setas **‹ ›** no topo. O mês escolhido vale para todas as telas, e **Hoje** volta ao mês atual.
 - Ver no rodapé do menu quando foi a última sincronização e se ela falhou.
-- Clicar em **Sincronizar agora** para buscar os dados dos bancos na hora.
+- Clicar em **Sincronizar agora** para buscar os dados dos bancos na hora. Sem nenhum banco conectado, o rodapé mostra
+  **Bancos · opcional** e um link para conectar o Meu Pluggy, no lugar do botão.
 - Contar com a sincronização automática: o app sincroniza ao iniciar e a cada `SYNC_INTERVAL_HOURS` horas (padrão: 6),
   e as telas se atualizam sozinhas quando ela termina.
 
 A Pluggy atualiza os dados dos bancos 1 vez por dia, então sincronizar mais vezes não traz dados mais novos que isso.
 A primeira sincronização de cada conta busca os últimos `SYNC_DAYS_BACK` dias (padrão: 90).
+
+**Duas origens: dos bancos e por você.** Todo valor que sai tem uma origem, e as telas separam as duas com cor e ícone:
+
+- **Dos bancos** (roxo, ícone de banco): o que o Meu Pluggy traz, como cartões, Pix, boletos, faturas e saldos.
+- **Cadastrado por você** (rosa, ícone de lápis): o que você lança no app, como as contas a pagar marcadas como pagas,
+  as entradas e as parcelas "Por X meses".
+
+O **total sempre soma as duas** ("Dos bancos R$ X + Por você R$ Y = total"). Quando o pagamento de uma conta paga à mão
+aparece depois no banco, ela passa sozinha para "Dos bancos" e não conta duas vezes.
+
+**Sem o Meu Pluggy o app funciona igual**, só com o que você cadastra: a parte "Dos bancos" vira um quadro **opcional**
+com o link para conectar, e as colunas dos bancos somem do Histórico e da Previsão. Dá para usar só com Entradas e
+Contas a pagar.
+
+![Dashboard sem banco conectado](img/app/11c-dashboard-sem-banco.jpg)
+
+**Selo "Funcionalidade MeuPluggy".** Enquanto o Meu Pluggy não estiver pronto (sem credenciais no `.env` ou sem
+nenhum banco cadastrado), as partes que dependem dos dados dos bancos mostram um selo vermelho claro com **!**. Passe o
+mouse sobre ele para ver o que falta configurar; clicar leva para Configurações. O selo some sozinho quando há
+credenciais e ao menos um banco.
+
+![Selo Funcionalidade MeuPluggy](img/app/19-meupluggy.jpg)
+
+Onde ele aparece: em Lançamentos e em **Bancos conectados** (Configurações). Entradas, Contas a pagar, Dashboard,
+Histórico e Parcelas e previsão funcionam também só com o que você cadastra.
 
 ## 7. Dashboard
 
@@ -132,17 +161,24 @@ dinheiro e o que falta pagar.
 
 **O que dá para fazer**
 
-- Ver **Entradas**, **Saídas**, **Resultado do mês** (verde quando positivo, vermelho quando negativo, com quanto
-  sobrou da entrada) e **Saldo em contas**, com o total das faturas abertas.
+- Ver **Entradas**, **Saídas · total** (com uma barrinha e o valor de cada origem: "Bancos R$ X + Você R$ Y"),
+  **Resultado do mês** (entradas menos todas as saídas; verde quando positivo, vermelho quando negativo, com quanto
+  sobrou da entrada) e **Saldo em contas**, com o total investido e o das faturas abertas. Sem banco conectado, o
+  último bloco vira **Falta pagar**, com o que ainda está em aberto em Contas a pagar.
 - Acompanhar o ano em **Seu ano**: uma linha de entradas (azul) e uma de saídas (laranja) por mês, com a sobra
   sombreada entre elas. Passe o mouse sobre um mês para ver entradas, saídas e sobra.
 - Ver quanto do **próximo mês já está comprometido** com parcelas e contas a pagar, no aviso logo abaixo do resumo
   (leva para [Parcelas e previsão](#10-parcelas-e-previsão)).
 - Ver os totais do ano: quanto entrou, saiu e sobrou e o gasto médio por mês.
-- Ver os **gastos por cartão e Pix** de cada banco (ex.: Cartão Nubank, Pix Santander) e os totais de todo o cartão,
-  todo o Pix e boletos.
+- Ver as **Saídas do mês** separadas pela origem, com o total do mês no topo e a conta no rodapé
+  ("Dos bancos + Por você = total"):
+  - **Dos bancos**: os gastos por cartão e Pix de cada banco (ex.: Cartão Nubank, Pix Santander) e os totais por meio.
+  - **Cadastrado por você**: as contas marcadas como pagas sem lançamento do banco, uma a uma (veja
+    [Contas a pagar](#11-contas-a-pagar)).
 - Ver as **contas a pagar** pendentes, com barra de progresso e as vencidas em vermelho.
-- Ver o **saldo de cada conta** e a fatura aberta de cada cartão, com o limite disponível.
+- Ver os **Saldos** de cada banco (só aparece com banco conectado): conta corrente, fatura aberta de cada cartão (com o limite disponível) e
+  **investimentos**, um a um (nome, tipo e vencimento) e somados. No rodapé, o total em contas, o total investido e a
+  soma dos dois. Os investimentos aparecem quando a Pluggy os envia para aquele banco; se não enviar, o bloco avisa.
 - Ir direto para Lançamentos, Contas a pagar ou Entradas pelos links de cada bloco.
 
 ![Dashboard: gastos, contas e saldos](img/app/11b-dashboard-gastos.jpg)
@@ -174,11 +210,13 @@ A visão de longo prazo: como foi cada ano e cada mês, para comparar períodos 
 **O que dá para fazer**
 
 - Escolher o ano pelas setas ou pelos botões de ano.
-- Ver quanto entrou, saiu e sobrou no ano e o gasto médio por mês.
+- Ver quanto entrou, saiu (com a parte dos bancos e a sua) e sobrou no ano e o gasto médio por mês.
 - Ver o gráfico de entradas e saídas do ano, com o detalhe de cada mês ao passar o mouse.
-- Comparar os meses na tabela **Mês a mês**: entradas, saídas, resultado e quanto foi em cartão, Pix, boleto e outros,
-  com o total do ano no rodapé.
-- Clicar num mês para abrir o detalhe: gastos por cartão e Pix de cada banco e os maiores gastos do mês.
+- Comparar os meses na tabela **Mês a mês**: entradas, saídas, resultado e, agrupadas, as colunas **Dos bancos**
+  (cartão, Pix, boleto e outros) e **Por você** (contas pagas). O rodapé traz o total do ano de cada coluna e o
+  subtotal de cada grupo. Sem banco conectado, as colunas dos bancos somem.
+- Clicar num mês para abrir o detalhe: as saídas separadas em "Dos bancos" e "Cadastrado por você", como no Dashboard,
+  e os maiores gastos do mês, cada um com a sua origem.
 - Ir do detalhe para os **Lançamentos** ou para o **Dashboard** daquele mês.
 
 ![Histórico: mês a mês e detalhe](img/app/15-historico-mes.jpg)
@@ -194,14 +232,15 @@ mês a mês, somando parcelas, contas a pagar e, se você quiser, a média dos g
 
 - Ver quanto **falta pagar em parcelas** no total, quanto cai **neste mês**, quanto já está **comprometido no próximo**
   (parcelas + contas a pagar) e em que mês você fica **livre de parcelas**.
-- Ver a **previsão** de 3, 6 ou 12 meses: entradas, parcelas, contas a pagar, gastos variáveis, quanto da entrada já está
-  comprometido (barra e %) e a **sobra prevista**.
+- Ver a **previsão** de 3, 6 ou 12 meses: entradas; **Previsto pelos bancos** (parcelas do cartão e a média do dia a
+  dia); **Cadastrado por você** (contas a pagar e parcelas fora do banco); quanto da entrada já está comprometido
+  (barra e %) e a **sobra prevista**. Sem banco conectado, só aparecem as colunas do que você cadastrou.
 - Ligar ou desligar **Incluir gastos variáveis**: a média dos últimos 3 meses de tudo que contou como gasto, tirando
   parcelas e contas a pagar (mercado, Pix, compras à vista…). Desligado, a previsão mostra só o que já é certo.
-- Ver cada **compra parcelada**: cartão, parcela atual (ex.: 3 de 10), valor por mês, quanto falta e em que mês
+- Ver cada **compra parcelada**, em duas listas (**Nos cartões** e **Cadastradas por você**): cartão, parcela atual (ex.: 3 de 10), valor por mês, quanto falta e em que mês
   termina, com uma barra de progresso. A última parcela ganha a etiqueta **última parcela**.
-- Ver também as compras parceladas **fora do banco**, cadastradas em Contas a pagar com "Por X meses" (etiqueta
-  "fora do banco").
+- Na lista **Cadastradas por você** ficam as compras parceladas fora do banco, cadastradas em Contas a pagar com
+  "Por X meses".
 - No Dashboard, o aviso "Em [mês] já estão comprometidos…" mostra o próximo mês e leva para esta tela.
 
 ![Compras parceladas](img/app/18-parcelas.jpg)
@@ -211,8 +250,9 @@ Como a previsão é montada:
 | Parte | De onde vem |
 |---|---|
 | Entradas | As do mês, se já informadas; senão, as entradas mensais do último mês que tem alguma |
-| Parcelas | Cada compra parcelada no cartão projetada até a última parcela, no mês da fatura, mais as contas "Por X meses" de Contas a pagar |
-| Contas a pagar | As contas de [Contas a pagar](#11-contas-a-pagar) já cadastradas no mês, avulsas ou mensais; nos meses à frente, também as mensais que ainda vão ser criadas. Ficam de fora as faturas de cartão e as contas "Por X meses", que já contam em Parcelas |
+| Parcelas do cartão | Cada compra parcelada no cartão projetada até a última parcela, no mês da fatura |
+| Parcelas fora do banco | As contas "Por X meses" de Contas a pagar |
+| Contas a pagar | As contas de [Contas a pagar](#11-contas-a-pagar) já cadastradas no mês, avulsas ou mensais; nos meses à frente, também as mensais que ainda vão ser criadas. Ficam de fora as faturas de cartão e as contas "Por X meses", que já contam nas parcelas |
 | Gastos variáveis | Média dos últimos 3 meses com dados, sem parcelas e sem pagamentos de contas a pagar |
 
 Limitações:
@@ -235,7 +275,7 @@ no extrato. As faturas dos cartões entram sozinhas, e o app sugere as contas qu
 **O que dá para fazer**
 
 - Ver as **faturas dos cartões** como contas, criadas sozinhas a cada sincronização, com vencimento e valor vindos
-  da Pluggy (etiqueta "fatura do cartão"). A fatura é marcada como paga quando o pagamento dela aparece no cartão ou
+  da Pluggy (etiqueta roxa "fatura do cartão · do banco"). A fatura é marcada como paga quando o pagamento dela aparece no cartão ou
   na conta corrente. Enquanto a fatura ainda está aberta, o valor aparece como **valor parcial** e é atualizado até
   o fechamento.
 - Aceitar as **sugestões de contas que se repetem**: saídas da conta corrente que aparecem em pelo menos 3 meses, com
@@ -246,10 +286,21 @@ no extrato. As faturas dos cartões entram sozinhas, e o app sugere as contas qu
   ou **Só este mês**.
 - Usar **Por X meses** para compras parceladas **fora do banco** (no dinheiro, no carnê…): a conta aparece em cada mês
   com a etiqueta da parcela da vez (ex.: "parcela 2/10") e some depois da última. Ela também entra na lista de compras
-  parceladas de [Parcelas e previsão](#10-parcelas-e-previsão), com a etiqueta "fora do banco".
+  parceladas de [Parcelas e previsão](#10-parcelas-e-previsão), na lista "Cadastradas por você".
 - Informar um **texto no extrato** (ex.: `G6 Internet`). Se ele aparecer numa saída do mês, a conta é marcada como paga e o
   app mostra qual lançamento deu a baixa.
 - Marcar ou desmarcar uma conta à mão. Ao desmarcar, a baixa automática daquela conta é desligada.
+- Ver **como cada conta foi paga**, pela etiqueta ao lado do nome:
+
+  | Etiqueta | Quando aparece | Texto embaixo |
+  |---|---|---|
+  | **identificado nos lançamentos** (verde) | O pagamento foi encontrado nos lançamentos do banco, sozinho ou depois de você marcar | "Pagamento identificado nos lançamentos em [data]: [descrição do lançamento] (conta/cartão [banco])". Se você tinha marcado antes, acrescenta "você tinha marcado como paga em [data]" |
+  | **pago à mão** (amarela) | Você marcou como paga e nenhum lançamento foi ligado a ela | "Marcada como paga à mão em [data] · conta como saída do mês até o pagamento aparecer nos lançamentos" |
+- Contar como **saída** uma conta paga fora dos bancos conectados (no dinheiro, ou antes de conectar a Pluggy): ao
+  marcar como paga uma conta que não tem lançamento do banco ligado a ela, o valor entra nas saídas do mês, em
+  **Cadastrado por você**. Se depois o pagamento aparecer no extrato (pelo texto do extrato), o lançamento é ligado à
+  conta e ela deixa de contar sozinha, para não somar duas vezes. Faturas de cartão não contam assim: as compras do
+  cartão já entram nas saídas.
 - Ver o que falta pagar no mês e o que já venceu (em vermelho).
 - Remover uma conta. Numa conta que se repete, o app pergunta se é para parar de repetir ou remover só deste mês. Uma
   fatura de cartão removida fica oculta só naquele mês; as dos meses seguintes continuam aparecendo.
@@ -323,6 +374,8 @@ A cada sincronização, o app classifica os lançamentos sozinho. Tudo pode ser 
 | Fatura do cartão | Vira uma conta a pagar, com baixa automática quando o pagamento aparece |
 | Saída que se repete todo mês | Aparece como sugestão em Contas a pagar |
 | Pix, boleto, TED, débito | Identificados pelo dado da Pluggy ou pela descrição |
+| Conta marcada como paga sem lançamento do banco | Conta como saída do mês, em "Cadastrado por você"; quando o lançamento aparece, é ligado a ela, passa para "Dos bancos" e conta uma vez só |
+| Investimento resgatado ou que sumiu da Pluggy | Sai da seção Saldos na próxima sincronização |
 
 ---
 
@@ -345,6 +398,9 @@ Erros de um banco aparecem em vermelho na linha dele, em **Configurações**, e 
 | "O plano gratuito permite até 5 conexões" | Limite do Meu Pluggy | Remova um banco para incluir outro |
 | Compra do cartão no mês errado | Fechamento/vencimento diferentes da fatura real | Ajuste em [Configurações → Contas e cartões](#13-configurações) |
 | Pix para você contando como gasto | Nome não cadastrado ou diferente do extrato | Ajuste em [Configurações → Transferências](#13-configurações) |
+| Selo "Funcionalidade MeuPluggy" nas telas | Pluggy sem credenciais no `.env` ou sem banco cadastrado | Siga a [Parte 1](#1-o-que-você-precisa-ter-em-mãos); o selo some sozinho |
+| Investimentos não aparecem em Saldos | A Pluggy não envia investimentos para esse banco ou plano | Nada a fazer no app; o restante funciona normalmente |
+| Pagamento contou duas vezes (conta paga à mão + Pix/boleto) | A conta não tem texto no extrato, então o app não ligou o lançamento a ela | Cadastre o texto no extrato da conta, ou desmarque "Conta no mês" no lançamento |
 | Faturas do cartão não aparecem em Contas a pagar | A Pluggy não enviou faturas nem o vencimento da fatura aberta desse cartão | Sincronize de novo; se continuar, cadastre a fatura como conta mensal com o texto "pagamento de fatura" |
 | Nenhuma sugestão de conta recorrente | Menos de 3 meses de lançamentos, ou valores e dias variando demais | Aguarde mais meses de dados ou cadastre a conta à mão |
 | "Este arquivo não é um backup do Financeiro" | Arquivo errado ou editado | Use um arquivo gerado por **Exportar backup** |

@@ -1,6 +1,6 @@
 # Financeiro
 
-App local de controle financeiro. Sincroniza saldos e lançamentos dos bancos via Meu Pluggy (Open Finance,
+App local de controle financeiro. Sincroniza saldos, investimentos e lançamentos dos bancos via Meu Pluggy (Open Finance,
 somente leitura) e mostra gastos por cartão e Pix, contas a pagar, o resultado do mês, o histórico por ano e mês e a
 previsão dos próximos meses com as compras parceladas, com backup em JSON. A única entrada manual é quanto entrou no mês.
 
@@ -49,6 +49,7 @@ para a própria máquina, e o container atende na porta 80. Se outro projeto pre
 Guias completos, com prints:
 [docs/configurar-pluggy.md](docs/configurar-pluggy.md) (contas na Pluggy) e
 [docs/configurar-app.md](docs/configurar-app.md) (bancos no app e um tour por todas as telas).
+Os mockups do visual ficam em [docs/design](docs/design/README.md).
 
 1. Na aplicação do dashboard da Pluggy, autorize cada banco pelo conector **MeuPluggy**. Cada autorização gera um `itemId`.
 2. No app, vá em **Configurações → Bancos conectados** e cole o `itemId` com o nome do banco.

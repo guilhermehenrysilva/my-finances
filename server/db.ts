@@ -105,6 +105,20 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT
 );
 
+CREATE TABLE IF NOT EXISTS investments (
+  id TEXT PRIMARY KEY,
+  item_id TEXT NOT NULL REFERENCES connections(item_id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  type TEXT,
+  subtype TEXT,
+  balance REAL NOT NULL DEFAULT 0,
+  issuer TEXT,
+  due_date TEXT,
+  rate REAL,
+  rate_type TEXT,
+  updated_at TEXT
+);
+
 CREATE TABLE IF NOT EXISTS recurring_dismissed (
   key TEXT PRIMARY KEY,
   dismissed_at TEXT NOT NULL DEFAULT (datetime('now'))

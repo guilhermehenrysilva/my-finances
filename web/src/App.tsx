@@ -48,6 +48,8 @@ export type PageProps = {
   navigate: (page: PageId) => void;
   /** Troca o mês selecionado e abre a página (ex.: do Histórico para os Lançamentos). */
   openMonth: (month: string, page: PageId) => void;
+  /** Meu Pluggy pronto (credenciais + ao menos um banco) — controla o selo "Funcionalidade MeuPluggy". */
+  pluggy: { ready: boolean; configured: boolean };
 };
 
 export function App() {
@@ -105,7 +107,9 @@ export function App() {
     navigate(target);
   };
 
-  const props: PageProps = { month, version, refresh, navigate, openMonth };
+  // Enquanto o status não carregou, considera pronto para o selo não piscar na tela.
+  const pluggy = { ready: status ? status.configured && status.connections > 0 : true, configured: status?.configured ?? true };
+  const props: PageProps = { month, version, refresh, navigate, openMonth, pluggy };
   const { eyebrow, title } = heading(page, month);
   const showMonth = page !== 'config' && page !== 'historico' && page !== 'previsao';
   const busy = syncing || !!status?.syncing;
@@ -122,14 +126,23 @@ export function App() {
             </a>
           ))}
         </nav>
-        <div className="sync">
-          <span className="sync-label">{status?.configured ? 'Última sincronização' : 'Pluggy'}</span>
-          <span className="sync-value">{status?.configured ? relativeTime(status.lastSyncAt) : 'não configurada'}</span>
-          {status?.lastError && <small className="error-text" title={status.lastError}>Falha na última sincronização</small>}
-          <button className="btn" onClick={sync} disabled={busy || !status?.configured}>
-            {busy ? 'Sincronizando…' : 'Sincronizar agora'}
-          </button>
-        </div>
+        {pluggy.ready ? (
+          <div className="sync">
+            <span className="sync-label">Última sincronização</span>
+            <span className="sync-value">{relativeTime(status?.lastSyncAt ?? null)}</span>
+            {status?.lastError && <small className="error-text" title={status.lastError}>Falha na última sincronização</small>}
+            <button className="btn" onClick={sync} disabled={busy}>
+              {busy ? 'Sincronizando…' : 'Sincronizar agora'}
+            </button>
+          </div>
+        ) : (
+          // Sem banco conectado o app funciona só com o que é cadastrado; os bancos são um extra.
+          <div className="sync">
+            <span className="sync-label">Bancos · opcional</span>
+            <span className="sync-value">Nenhum banco conectado</span>
+            <a className="link-btn" href="#/config">Conectar o Meu Pluggy</a>
+          </div>
+        )}
       </aside>
 
       <main className="content">

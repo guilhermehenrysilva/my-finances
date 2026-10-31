@@ -89,6 +89,8 @@ async function syncItem(itemId: string, ctx: IgnoreContext): Promise<void> {
   db.prepare('UPDATE connections SET connector_name = ?, status = ?, last_updated_at = ?, error = ? WHERE item_id = ?')
     .run(item.connector?.name ?? null, item.status, item.lastUpdatedAt, item.error?.message ?? null, itemId);
 
+  await syncInvestments(itemId);
+
   const accounts = await pluggy.getAccounts(itemId);
   for (const a of accounts) {
     upsertAccount(itemId, a);
@@ -115,6 +117,38 @@ async function syncItem(itemId: string, ctx: IgnoreContext): Promise<void> {
       upsertTransactions(row, txs, ctx);
     });
   }
+}
+
+/**
+ * Investimentos do banco. Nem toda conexão (ou plano) da Pluggy entrega esse dado: se a API recusar,
+ * o banco fica sem investimentos e a sincronização segue normalmente.
+ */
+async function syncInvestments(itemId: string): Promise<void> {
+  let list;
+  try {
+    list = await pluggy.getInvestments(itemId);
+  } catch (err) {
+    if (err instanceof PluggyError) return;
+    throw err;
+  }
+  const upsert = db.prepare(`
+    INSERT INTO investments (id, item_id, name, type, subtype, balance, issuer, due_date, rate, rate_type, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    ON CONFLICT(id) DO UPDATE SET
+      name = excluded.name, type = excluded.type, subtype = excluded.subtype, balance = excluded.balance,
+      issuer = excluded.issuer, due_date = excluded.due_date, rate = excluded.rate, rate_type = excluded.rate_type,
+      updated_at = excluded.updated_at
+  `);
+  const active = list.filter((i) => !i.status || i.status === 'ACTIVE');
+  transaction(() => {
+    // Resgatados, vencidos ou que sumiram da Pluggy saem daqui também.
+    const ids = active.map((i) => i.id);
+    db.prepare(`DELETE FROM investments WHERE item_id = ? AND id NOT IN (${ids.map(() => '?').join(',') || "''"})`).run(itemId, ...ids);
+    for (const i of active) {
+      upsert.run(i.id, itemId, i.name, i.type ?? null, i.subtype ?? null, i.balance ?? 0, i.issuer ?? null,
+        i.dueDate ? localDate(i.dueDate) : null, i.rate ?? null, i.rateType ?? null);
+    }
+  });
 }
 
 function daysBetween(a: string, b: string): number {

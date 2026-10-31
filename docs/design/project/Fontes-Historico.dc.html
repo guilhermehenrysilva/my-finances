@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Histórico por origem</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5FB}
+a{color:#5B3DF5}a:hover{color:#4327D6}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #17163A; background: #F4F5FB; min-height: 100vh; box-sizing: border-box; padding: 32px 40px 48px">
+<main style="max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+
+  <header style="display: flex; flex-direction: column; gap: 4px">
+    <span style="font-size: 14px; color: #55547A; font-weight: 600">Histórico</span>
+    <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em">2026 mês a mês</h1>
+  </header>
+
+  <section aria-labelledby="meses-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+      <h2 id="meses-titulo" style="margin: 0; font-size: 20px; font-weight: 800">Mês a mês</h2>
+      <span style="font-size: 14px; color: #55547A">Saídas = dos bancos + por você · clique num mês para ver os gastos</span>
+    </div>
+    <div style="overflow-x: auto">
+      <table style="width: 100%; border-collapse: collapse; min-width: 900px; font-size: 14px; font-variant-numeric: tabular-nums">
+        <thead>
+          <tr style="font-size: 12px">
+            <th colspan="4" style="padding: 0"></th>
+            <th colspan="4" scope="colgroup" style="padding: 8px; background: #EEEAFF; color: #3A22C4; font-weight: 800; text-align: center; border-radius: 10px 10px 0 0">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10v8"></path><path d="M10 10v8"></path><path d="M14 10v8"></path><path d="M19 10v8"></path><path d="M3 20h18"></path></svg>Dos bancos</span>
+            </th>
+            <th style="padding: 0; width: 8px"></th>
+            <th scope="colgroup" style="padding: 8px; background: #FCE7F3; color: #9D174D; font-weight: 800; text-align: center; border-radius: 10px 10px 0 0">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>Por você</span>
+            </th>
+          </tr>
+          <tr style="text-align: right; font-size: 13px; color: #55547A">
+            <th style="padding: 12px 8px; text-align: left; font-weight: 700">Mês</th>
+            <th style="padding: 12px 8px; font-weight: 700">Entradas</th>
+            <th style="padding: 12px 8px; font-weight: 800; color: #17163A">Saídas</th>
+            <th style="padding: 12px 8px; font-weight: 700">Resultado</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Cartão</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Pix</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Boleto</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Outros</th>
+            <th></th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #FEF3F9">Contas pagas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700"><a href="#" style="text-decoration: none">Julho</a></td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 2.644,20</td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.555,80</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.102,30</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 512,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 749,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">—</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 280,00</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700"><a href="#" style="text-decoration: none">Agosto</a></td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 3.114,25</td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.085,75</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.380,10</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 430,25</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 749,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 85,00</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 469,00</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700"><a href="#" style="text-decoration: none">Setembro</a></td>
+            <td style="padding: 12px 8px">R$ 6.450,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 2.813,20</td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.636,80</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.195,60</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 398,70</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 749,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">—</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 469,00</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right; background: #F4F1FF">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 800"><a href="#" aria-current="true" style="text-decoration: none">Outubro</a></td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 3.065,70</td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.134,30</td>
+            <td style="padding: 12px 8px; color: #55547A">R$ 1.240,50</td>
+            <td style="padding: 12px 8px; color: #55547A">R$ 606,30</td>
+            <td style="padding: 12px 8px; color: #55547A">R$ 749,90</td>
+            <td style="padding: 12px 8px; color: #55547A">—</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A">R$ 469,00</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right; color: #8A89A8">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700">Novembro <small style="font-weight: 600">por vir</small></td>
+            <td style="padding: 12px 8px">—</td><td style="padding: 12px 8px">—</td><td style="padding: 12px 8px">—</td>
+            <td style="padding: 12px 8px; background: #F7F5FF">—</td><td style="padding: 12px 8px; background: #F7F5FF">—</td><td style="padding: 12px 8px; background: #F7F5FF">—</td><td style="padding: 12px 8px; background: #F7F5FF">—</td>
+            <td></td><td style="padding: 12px 8px; background: #FEF3F9">—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr style="border-top: 2px solid #D9DAEA; text-align: right; font-weight: 800">
+            <td style="padding: 14px 8px; text-align: left">Total</td>
+            <td style="padding: 14px 8px">R$ 25.050,00</td>
+            <td style="padding: 14px 8px">R$ 11.637,35</td>
+            <td style="padding: 14px 8px; color: #0A7A50">R$ 13.412,65</td>
+            <td style="padding: 14px 8px; background: #F7F5FF">R$ 4.918,50</td>
+            <td style="padding: 14px 8px; background: #F7F5FF">R$ 1.947,25</td>
+            <td style="padding: 14px 8px; background: #F7F5FF">R$ 2.999,60</td>
+            <td style="padding: 14px 8px; background: #F7F5FF">R$ 85,00</td>
+            <td></td>
+            <td style="padding: 14px 8px; background: #FEF3F9">R$ 1.687,00</td>
+          </tr>
+          <tr style="text-align: right; font-size: 13px">
+            <td colspan="4"></td>
+            <td colspan="4" style="padding: 8px; background: #EEEAFF; color: #3A22C4; font-weight: 800; text-align: center; border-radius: 0 0 10px 10px">R$ 9.950,35 dos bancos</td>
+            <td></td>
+            <td style="padding: 8px; background: #FCE7F3; color: #9D174D; font-weight: 800; text-align: center; border-radius: 0 0 10px 10px">R$ 1.687,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #55547A">Sem banco conectado, as colunas “Dos bancos” somem e as Saídas são só as contas pagas.</p>
+  </section>
+
+  <section aria-labelledby="detalhe-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <h2 id="detalhe-titulo" style="margin: 0; font-size: 20px; font-weight: 800">Outubro de 2026</h2>
+        <span style="font-size: 14px; color: #55547A; font-variant-numeric: tabular-nums">Entradas R$ 6.200,00 · Saídas R$ 3.065,70 · <b style="color: #0A7A50">Resultado R$ 3.134,30</b></span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <button type="button" style="min-height: 44px; padding: 0 16px; border: 1px solid #E7E8F3; border-radius: 12px; background: #FFFFFF; color: #17163A; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer">Abrir no dashboard</button>
+        <button type="button" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 12px; background: #5B3DF5; color: #FFFFFF; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer">Ver todos os lançamentos</button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+          <h3 style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #3A22C4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10v8"></path><path d="M10 10v8"></path><path d="M14 10v8"></path><path d="M19 10v8"></path><path d="M3 20h18"></path></svg>Dos bancos</h3>
+          <b style="color: #3A22C4; font-variant-numeric: tabular-nums">R$ 2.596,70</b>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; font-variant-numeric: tabular-nums">
+          <li style="display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto; align-items: center; gap: 12px"><span style="display: flex; gap: 8px; align-items: center; min-width: 0"><span style="padding: 3px 8px; border-radius: 999px; background: #EEEAFF; color: #3A22C4; font-size: 12px; font-weight: 700">Cartão</span><span style="font-weight: 600">Nubank</span></span><span style="height: 8px; background: #F0F0F7; border-radius: 4px"><span style="display: block; height: 100%; width: 100%; background: #5B3DF5; border-radius: 4px"></span></span><b>R$ 1.240,50</b></li>
+          <li style="display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto; align-items: center; gap: 12px"><span style="display: flex; gap: 8px; align-items: center; min-width: 0"><span style="padding: 3px 8px; border-radius: 999px; background: #FFF3D6; color: #8A5A00; font-size: 12px; font-weight: 700">Boleto</span><span style="font-weight: 600">Nubank</span></span><span style="height: 8px; background: #F0F0F7; border-radius: 4px"><span style="display: block; height: 100%; width: 60%; background: #5B3DF5; border-radius: 4px"></span></span><b>R$ 749,90</b></li>
+          <li style="display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto; align-items: center; gap: 12px"><span style="display: flex; gap: 8px; align-items: center; min-width: 0"><span style="padding: 3px 8px; border-radius: 999px; background: #DDF6F1; color: #0B6B5C; font-size: 12px; font-weight: 700">Pix</span><span style="font-weight: 600">Nubank</span></span><span style="height: 8px; background: #F0F0F7; border-radius: 4px"><span style="display: block; height: 100%; width: 39%; background: #5B3DF5; border-radius: 4px"></span></span><b>R$ 486,30</b></li>
+          <li style="display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(60px, 1fr) auto; align-items: center; gap: 12px"><span style="display: flex; gap: 8px; align-items: center; min-width: 0"><span style="padding: 3px 8px; border-radius: 999px; background: #DDF6F1; color: #0B6B5C; font-size: 12px; font-weight: 700">Pix</span><span style="font-weight: 600">Santander</span></span><span style="height: 8px; background: #F0F0F7; border-radius: 4px"><span style="display: block; height: 100%; width: 10%; background: #5B3DF5; border-radius: 4px"></span></span><b>R$ 120,00</b></li>
+        </ul>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+          <h3 style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #9D174D"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>Cadastrado por você</h3>
+          <b style="color: #9D174D; font-variant-numeric: tabular-nums">R$ 469,00</b>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; font-size: 14px; font-variant-numeric: tabular-nums">
+          <li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Diarista</b><small style="font-size: 12px; color: #6A6990">Paga em 24/10</small></span><b>R$ 280,00</b></li>
+          <li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Curso de inglês · 2/10</b><small style="font-size: 12px; color: #6A6990">Paga em 10/10</small></span><b>R$ 189,00</b></li>
+        </ul>
+        <h3 style="margin: 8px 0 0; font-size: 15px; font-weight: 800">Maiores gastos</h3>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; font-size: 14px; font-variant-numeric: tabular-nums">
+          <li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Condomínio</b><small style="font-size: 12px; color: #3A22C4; font-weight: 600">Banco · Nubank · 20/10</small></span><b>R$ 650,00</b></li>
+          <li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Diarista</b><small style="font-size: 12px; color: #9D174D; font-weight: 600">Por você · 24/10</small></span><b>R$ 280,00</b></li>
+          <li style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Mercado Pão de Mel</b><small style="font-size: 12px; color: #3A22C4; font-weight: 600">Banco · Cartão Nubank · 12/10</small></span><b>R$ 214,80</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

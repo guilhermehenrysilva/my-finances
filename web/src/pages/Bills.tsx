@@ -1,10 +1,24 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { api, type Bill, type Suggestion } from '../api.ts';
 import { money, monthName, parseMoney, shortDate, todayStr } from '../format.ts';
-import { Hint, Icon } from '../icons.tsx';
+import { Hint, Icon, SourceTag } from '../icons.tsx';
 import type { PageProps } from '../App.tsx';
 
 type Repeat = 'once' | 'monthly' | 'times';
+
+/** Linha de status: em aberto, paga à mão ou paga com o lançamento do banco identificado. */
+function billStatus(b: Bill, overdue: boolean, auto: string): string {
+  if (!b.paid_at) return `${overdue ? 'Venceu' : 'Vence'} ${shortDate(b.due_date)}${auto}`;
+  if (b.transaction_id) {
+    const where = b.tx_account ? ` (${b.tx_account_type === 'CREDIT' ? 'cartão' : 'conta'} ${b.tx_account})` : '';
+    const found = `Pagamento identificado nos lançamentos em ${shortDate(b.tx_date ?? b.paid_at)}: ${b.tx_description}${where}`;
+    // A baixa automática usa a data do lançamento; data diferente quer dizer que você marcou antes, à mão.
+    return b.tx_date && b.paid_at !== b.tx_date ? `${found} · você tinha marcado como paga em ${shortDate(b.paid_at)}` : found;
+  }
+  return b.card_account_id
+    ? `Marcada como paga à mão em ${shortDate(b.paid_at)} · não soma nas saídas (as compras do cartão já contam)`
+    : `Marcada como paga à mão em ${shortDate(b.paid_at)} · conta como saída do mês até o pagamento aparecer nos lançamentos`;
+}
 const EMPTY = { description: '', amount: '', dueDay: '', matchText: '', repeat: 'monthly' as Repeat, times: '' };
 
 export function BillsPage({ month, version, refresh }: PageProps) {
@@ -91,14 +105,16 @@ export function BillsPage({ month, version, refresh }: PageProps) {
                         {b.repeat_total != null
                           ? <span className="tag tag-accent">parcela {b.repeat_index}/{b.repeat_total}</span>
                           : b.template_id != null && <span className="tag">mensal</span>}
-                        {b.card_account_id && <span className="tag tag-accent">fatura do cartão</span>}
+                        {b.card_account_id && <SourceTag source="bank">fatura do cartão · do banco</SourceTag>}
                         {b.estimated ? <span className="tag tag-warn" title="Fatura ainda aberta: o valor muda até o fechamento">valor parcial</span> : null}
+                        {b.paid_at && b.transaction_id && (
+                          <span className="tag tag-good" title="O pagamento foi encontrado nos lançamentos vindos do banco">identificado nos lançamentos</span>
+                        )}
+                        {b.paid_at && !b.transaction_id && (
+                          <span className="tag tag-warn" title="Marcada como paga por você, sem lançamento do banco ligado a ela">pago à mão</span>
+                        )}
                       </span>
-                      <small className={overdue ? 'error-text' : 'muted'}>
-                        {b.paid_at
-                          ? b.transaction_id ? `Paga em ${shortDate(b.paid_at)} · encontrada: ${b.tx_description}` : `Marcada como paga em ${shortDate(b.paid_at)}`
-                          : `${overdue ? 'Venceu' : 'Vence'} ${shortDate(b.due_date)}${auto}`}
-                      </small>
+                      <small className={overdue ? 'error-text' : 'muted'}>{billStatus(b, overdue, auto)}</small>
                     </span>
                   </label>
                   <span className="num">{b.amount != null ? money(b.amount) : '—'}</span>

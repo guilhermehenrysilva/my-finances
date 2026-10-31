@@ -126,11 +126,15 @@ const sumMonths = year.months.filter((m) => m.hasData).reduce((s, m) => s + m.ex
 check('ano: total = soma dos meses', Math.abs(sumMonths - year.totals.expenses) < 0.01);
 const oct = year.months[9];
 const sumMethods = Object.values(oct.byMethod).reduce((s, v) => s + v, 0);
-check('ano: meios de outubro somam as saídas', Math.abs(sumMethods - oct.expenses) < 0.01, { sumMethods, oct });
+check('ano: meios de outubro somam a parte dos bancos', Math.abs(sumMethods - oct.bank) < 0.01, { sumMethods, oct });
+check('ano: bancos + por você = saídas do mês', Math.abs(oct.bank + oct.manual - oct.expenses) < 0.01, oct);
+check('ano: totais bancos + por você = saídas do ano', Math.abs(year.totals.bank + year.totals.manual - year.totals.expenses) < 0.01, year.totals);
+check('ano: com banco conectado mostra a parte dos bancos', year.hasBanks === true);
 
 // ---- Previsão ----
 const fc = (await get('/forecast?months=6')).json;
 const amazon = fc.installments.find((i) => i.description === 'Amazon');
+check('previsão: parcelas do cartão + fora do banco = parcelas', fc.months.every((m) => Math.abs(m.cardInstallments + m.manualInstallments - m.installments) < 0.01), fc.months);
 check('parcelas: Amazon agrupada em 2/5', amazon?.current === 2 && amazon.total === 5, amazon);
 check('parcelas: leitura pela descrição', fc.installments.some((i) => i.description === 'LOJA DE ROUPAS'));
 check('previsão: novembro soma avulsa+mensais', fc.months[1].fixed === 10 + 650, fc.months[1]);
@@ -162,6 +166,46 @@ const dHidden = (await get('/dashboard?month=2026-10')).json;
 check('ocultar conta tira dos totais', !dHidden.accounts.some((a) => a.id === 'acc-san-cc') && dHidden.bankTotal === 12480.5);
 await patch('/accounts/acc-san-cc', { hidden: false });
 
+// ---- Saldos e investimentos ----
+const dSal = (await get('/dashboard?month=2026-10')).json;
+const nuBank = dSal.banks.find((b) => b.label === 'Nubank');
+check('investimentos sincronizados (resgatado fica de fora)', nuBank?.investments.length === 2 && nuBank.investmentsTotal === 8200, nuBank?.investments);
+check('total de investimentos', dSal.investmentsTotal === 8200, dSal.investmentsTotal);
+check('banco sem permissão de investimentos não quebra a sincronização', dSal.banks.find((b) => b.label === 'Santander')?.investments.length === 0);
+check('saldo por banco: conta corrente', nuBank?.bankBalance === 12480.5 && nuBank.cardOpen === 812.4, nuBank);
+
+// ---- Conta paga à mão conta como saída (sem duplicar quando o lançamento aparece) ----
+const base10 = (await get('/dashboard?month=2026-10')).json.expenses.total;
+await post('/bills', { month: '2026-10', description: 'Dentista', amount: 200, dueDay: 25 });
+const dentista = (await get('/bills?month=2026-10')).json.find((b) => b.description === 'Dentista');
+check('conta em aberto não conta como saída', (await get('/dashboard?month=2026-10')).json.expenses.total === base10);
+await patch(`/bills/${dentista.id}`, { paid: true });
+const dPaid = (await get('/dashboard?month=2026-10')).json;
+check('conta paga à mão soma nas saídas', Math.abs(dPaid.expenses.total - base10 - 200) < 0.01, { antes: base10, depois: dPaid.expenses.total });
+check('aparece em "Cadastrado por você"', dPaid.expenses.manual.items.some((b) => b.description === 'Dentista' && b.amount === 200) && !dPaid.expenses.groups.some((g) => g.account_type === 'MANUAL'), dPaid.expenses.manual);
+check('dashboard: bancos + por você = total', Math.abs(dPaid.expenses.bank + dPaid.expenses.manual.total - dPaid.expenses.total) < 0.01, dPaid.expenses);
+check('dashboard: com banco conectado', dPaid.hasBanks === true);
+const yPaid = (await get('/year?year=2026')).json.months[9];
+check('entra no histórico do mês (por você)', yPaid.manual >= 200, yPaid);
+await patch(`/bills/${dentista.id}`, { paid: false });
+check('desmarcar tira das saídas', (await get('/dashboard?month=2026-10')).json.expenses.total === base10);
+// Pago à mão antes de o lançamento existir; depois o banco sincroniza e o lançamento é ligado à conta.
+await del('/connections/22222222-2222-4222-8222-222222222222');
+const baseSemSan = (await get('/dashboard?month=2026-10')).json.expenses.total;
+await post('/bills', { month: '2026-10', description: 'Academia', amount: 120, dueDay: 8, matchText: 'academia fit' });
+const academia = (await get('/bills?month=2026-10')).json.find((b) => b.description === 'Academia');
+check('sem o lançamento, a academia fica em aberto', !academia.paid_at, academia);
+await patch(`/bills/${academia.id}`, { paid: true });
+check('paga à mão conta 120', Math.abs((await get('/dashboard?month=2026-10')).json.expenses.total - baseSemSan - 120) < 0.01);
+await post('/connections', { itemId: '22222222-2222-4222-8222-222222222222', label: 'Santander' });
+await post('/sync');
+const academia2 = (await get('/bills?month=2026-10')).json.find((b) => b.description === 'Academia');
+const dLinked = (await get('/dashboard?month=2026-10')).json;
+check('lançamento do banco é ligado à conta paga à mão', !!academia2.transaction_id, academia2);
+check('conta traz data e conta do lançamento identificado', academia2.tx_date === '2026-10-08' && academia2.tx_account === 'Santander' && academia2.tx_account_type === 'BANK', academia2);
+check('mantém a data em que foi marcada à mão', academia2.paid_at === '2026-10-31', academia2.paid_at);
+check('e não soma duas vezes', !dLinked.expenses.manual.items.some((b) => b.description === 'Academia') && Math.abs(dLinked.expenses.total - baseSemSan - 120) < 0.01, { base: baseSemSan, total: dLinked.expenses.total });
+
 // ---- Limite de 5 conexões ----
 for (let i = 3; i <= 5; i++) await post('/connections', { itemId: `${i}${i}${i}${i}${i}${i}${i}${i}-${i}${i}${i}${i}-4${i}${i}${i}-8${i}${i}${i}-${String(i).repeat(12)}`, label: `B${i}` });
 check('6ª conexão recusada', (await post('/connections', { itemId: '66666666-6666-4666-8666-666666666666', label: 'B6' })).status === 400);
@@ -182,6 +226,19 @@ check('backup inválido recusado', (await post('/backup', { format: 'x' })).stat
 await del('/connections/11111111-1111-4111-8111-111111111111');
 const orphan = (await get('/bills?month=2026-10')).json.filter((b) => b.card_account_id);
 check('remover banco remove as faturas do cartão dele', orphan.length === 0, orphan);
+await post('/backup', bk);
+
+// ---- Sem banco conectado: tudo é cadastrado por você ----
+const semBanco = structuredClone(bk);
+for (const t of ['connections', 'accounts', 'investments', 'card_bills', 'transactions']) semBanco.tables[t] = [];
+semBanco.tables.bills = bk.tables.bills.filter((b) => !b.card_account_id).map((b) => ({ ...b, transaction_id: null }));
+check('importar backup sem bancos', (await post('/backup', semBanco)).json.ok === true);
+const dSem = (await get('/dashboard?month=2026-10')).json;
+check('sem banco: dashboard esconde a parte dos bancos', dSem.hasBanks === false && dSem.expenses.bank === 0 && dSem.expenses.groups.length === 0, dSem.expenses);
+check('sem banco: saídas = contas pagas', dSem.expenses.total === dSem.expenses.manual.total && dSem.expenses.manual.items.length > 0, dSem.expenses.manual);
+check('sem banco: resultado = entradas − contas pagas', Math.abs(dSem.result - (dSem.income.total - dSem.expenses.manual.total)) < 0.01);
+const ySem = (await get('/year?year=2026')).json;
+check('sem banco: histórico sem colunas dos bancos', ySem.hasBanks === false && ySem.totals.bank === 0 && ySem.totals.expenses === ySem.totals.manual, ySem.totals);
 await post('/backup', bk);
 
 // ---- Segurança: pedidos de outros sites ----

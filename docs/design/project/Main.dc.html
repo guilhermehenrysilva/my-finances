@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5FB}
+a{color:#5B3DF5}a:hover{color:#4327D6}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #17163A; background: #F4F5FB; min-height: 100vh; display: flex; flex-wrap: wrap; align-items: flex-start">
+
+  <aside style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; padding: 24px 16px; display: flex; flex-direction: column; gap: 28px; background: #FFFFFF; border-right: 1px solid #E7E8F3; align-self: stretch">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+      <span style="width: 36px; height: 36px; border-radius: 11px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px">R$</span>
+      <span style="font-weight: 800; font-size: 18px; letter-spacing: -0.02em">Financeiro</span>
+    </div>
+    <nav aria-label="Navegação principal" style="display: flex; flex-direction: column; gap: 4px">
+      <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; background: #EEEAFF; color: #3A22C4; font-weight: 700; text-decoration: none; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"></rect><rect x="14" y="3" width="7" height="5" rx="2"></rect><rect x="14" y="12" width="7" height="9" rx="2"></rect><rect x="3" y="16" width="7" height="5" rx="2"></rect></svg>
+        Dashboard
+      </a>
+      <a href="Lancamentos.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: #55547A; font-weight: 600; text-decoration: none; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>
+        Lançamentos
+      </a>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: #55547A; font-weight: 600; text-decoration: none; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        Contas a pagar
+      </a>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: #55547A; font-weight: 600; text-decoration: none; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg>
+        Entradas
+      </a>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 12px; color: #55547A; font-weight: 600; text-decoration: none; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+        Configurações
+      </a>
+    </nav>
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 16px; background: #F4F5FB">
+      <span style="font-size: 13px; color: #55547A">Última sincronização</span>
+      <span style="font-size: 15px; font-weight: 700">hoje, 08:12</span>
+      <button type="button" style="min-height: 44px; border: 0; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer">Sincronizar agora</button>
+    </div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 48px; display: flex; flex-direction: column; gap: 24px; max-width: 1240px">
+
+    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 14px; color: #55547A; font-weight: 600">Olá! Este é o seu mês</span>
+        <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em">Outubro de 2026</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 14px; background: #FFFFFF; border: 1px solid #E7E8F3">
+        <button type="button" aria-label="Mês anterior" style="width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: #17163A; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <span style="font-weight: 700; font-size: 15px; padding: 0 6px">Out 2026</span>
+        <button type="button" aria-label="Próximo mês" style="width: 44px; height: 44px; border: 0; border-radius: 10px; background: transparent; color: #17163A; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></button>
+      </div>
+    </header>
+
+    <section aria-label="Resumo do mês" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+      <div style="background: #FFFFFF; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: #E4EFFD; color: #1F66C9; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path></svg></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; color: #55547A; font-weight: 600">Entradas</span>
+          <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums">R$ 8.000,00</span>
+          <span style="font-size: 13px; color: #55547A">Salário · mensal</span>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: #FDEBE3; color: #C24A1A; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M19 12l-7 7-7-7"></path></svg></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; color: #55547A; font-weight: 600">Saídas</span>
+          <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums">R$ 1.291,70</span>
+          <span style="font-size: 13px; color: #55547A">Cartões, Pix e boletos</span>
+        </div>
+      </div>
+      <div style="background: #0E8F5E; color: #FFFFFF; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 24px rgba(14,143,94,0.25)">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"></path><path d="M14 7h7v7"></path></svg></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; font-weight: 600">Resultado do mês</span>
+          <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums">+ R$ 6.708,30</span>
+          <span style="font-size: 13px; font-weight: 600">Positivo · sobrou 84% da entrada</span>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: #EEEAFF; color: #4A2FE0; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="14" rx="3"></rect><path d="M2 10h20"></path><path d="M16 15h2"></path></svg></span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 14px; color: #55547A; font-weight: 600">Saldo em contas</span>
+          <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums">R$ 14.710,50</span>
+          <span style="font-size: 13px; color: #55547A">Faturas abertas: R$ 897,40</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="ano-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+      <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <h2 id="ano-titulo" style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Seu ano em 2026</h2>
+          <span style="font-size: 14px; color: #55547A">Entradas e saídas de cada mês</span>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+          <div style="display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: 600" aria-label="Legenda">
+            <span style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 4px; border-radius: 2px; background: {{incomeColor}}"></span>Entradas</span>
+            <span style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 4px; border-radius: 2px; background: {{expenseColor}}"></span>Saídas</span>
+          </div>
+          <div role="group" aria-label="Ano" style="display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: #F4F5FB">
+            <button type="button" style="min-height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: #55547A; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer">2025</button>
+            <button type="button" aria-pressed="true" style="min-height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: #FFFFFF; color: #17163A; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 1px 3px rgba(23,22,58,0.12)">2026</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+        <figure style="flex: 999 1 560px; min-width: 0; margin: 0">
+          <svg viewBox="0 0 1000 290" style="width: 100%; height: auto; display: block" role="img" aria-label="Gráfico de linhas de 2026 com dados de exemplo: entradas de R$ 8.000 por mês e saídas entre R$ 1.292 e R$ 4.100 de janeiro a outubro">
+            <g stroke="#ECEDF5" stroke-width="1">
+              <line x1="60" y1="20" x2="980" y2="20"></line>
+              <line x1="60" y1="77.5" x2="980" y2="77.5"></line>
+              <line x1="60" y1="135" x2="980" y2="135"></line>
+              <line x1="60" y1="192.5" x2="980" y2="192.5"></line>
+            </g>
+            <line x1="60" y1="250" x2="980" y2="250" stroke="#D4D5E3" stroke-width="1"></line>
+            <g font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="13" fill="#6A6990" text-anchor="end">
+              <text x="48" y="24">10 mil</text>
+              <text x="48" y="81.5">7,5 mil</text>
+              <text x="48" y="139">5 mil</text>
+              <text x="48" y="196.5">2,5 mil</text>
+              <text x="48" y="254">0</text>
+            </g>
+            <g font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="13" fill="#6A6990" text-anchor="middle">
+              <text x="60" y="276">Jan</text>
+              <text x="143.6" y="276">Fev</text>
+              <text x="227.3" y="276">Mar</text>
+              <text x="310.9" y="276">Abr</text>
+              <text x="394.5" y="276">Mai</text>
+              <text x="478.2" y="276">Jun</text>
+              <text x="561.8" y="276">Jul</text>
+              <text x="645.5" y="276">Ago</text>
+              <text x="729.1" y="276">Set</text>
+              <text x="812.7" y="276" font-weight="700" fill="#17163A">Out</text>
+              <text x="896.4" y="276">Nov</text>
+              <text x="980" y="276">Dez</text>
+            </g>
+            <polygon points="60,66 143.6,66 227.3,66 310.9,66 394.5,66 478.2,66 561.8,66 645.5,66 729.1,66 812.7,66 812.7,220.3 729.1,218.6 645.5,195.7561.8,155.7 478.2,186.8 394.5,167.2 310.9,201.7 227.3,183.3 143.6,193.6 60,176.4" fill="#0E8F5E" fill-opacity="0.08"></polygon>
+            <line x1="812.7" y1="20" x2="812.7" y2="250" stroke="#B9BAD0" stroke-width="1" stroke-dasharray="3 4"></line>
+            <polyline points="60,66 143.6,66 227.3,66 310.9,66 394.5,66 478.2,66 561.8,66 645.5,66 729.1,66 812.7,66" fill="none" stroke="{{incomeColor}}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+            <polyline points="60,176.4 143.6,193.6 227.3,183.3 310.9,201.7 394.5,167.2 478.2,186.8 561.8,155.7 645.5,195.7729.1,218.6 812.7,220.3" fill="none" stroke="{{expenseColor}}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+            <g fill="{{incomeColor}}" stroke="#FFFFFF" stroke-width="2">
+              <circle cx="60" cy="66" r="4.5"></circle><circle cx="143.6" cy="66" r="4.5"></circle><circle cx="227.3" cy="66" r="4.5"></circle><circle cx="310.9" cy="66" r="4.5"></circle><circle cx="394.5" cy="66" r="4.5"></circle><circle cx="478.2" cy="66" r="4.5"></circle><circle cx="561.8" cy="66" r="4.5"></circle><circle cx="645.5" cy="66" r="4.5"></circle><circle cx="729.1" cy="66" r="4.5"></circle><circle cx="812.7" cy="66" r="6"></circle>
+            </g>
+            <g fill="{{expenseColor}}" stroke="#FFFFFF" stroke-width="2">
+              <circle cx="60" cy="176.4" r="4.5"></circle><circle cx="143.6" cy="193.6" r="4.5"></circle><circle cx="227.3" cy="183.3" r="4.5"></circle><circle cx="310.9" cy="201.7" r="4.5"></circle><circle cx="394.5" cy="167.2" r="4.5"></circle><circle cx="478.2" cy="186.8" r="4.5"></circle><circle cx="561.8" cy="155.7" r="4.5"></circle><circle cx="645.5" cy="195.7" r="4.5"></circle><circle cx="729.1" cy="218.6" r="4.5"></circle><circle cx="812.7" cy="220.3" r="6"></circle>
+            </g>
+            <g font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="13" font-weight="700">
+              <text x="826" y="70" fill="#1F66C9">Entradas</text>
+              <text x="826" y="225" fill="#B0441A">Saídas</text>
+            </g>
+            <g font-family="Plus Jakarta Sans, system-ui, sans-serif">
+              <rect x="628" y="92" width="172" height="76" rx="10" fill="#17163A"></rect>
+              <text x="642" y="114" font-size="12" font-weight="700" fill="#FFFFFF">Outubro</text>
+              <text x="642" y="134" font-size="12" fill="#D7D6EA">Entradas</text>
+              <text x="786" y="134" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end">R$ 8.000,00</text>
+              <text x="642" y="154" font-size="12" fill="#D7D6EA">Saídas</text>
+              <text x="786" y="154" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="end">R$ 1.291,70</text>
+            </g>
+          </svg>
+        </figure>
+
+        <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 12px">
+          <div style="padding: 16px; border-radius: 16px; background: #F4F5FB; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; color: #55547A; font-weight: 600">Entrou no ano</span>
+            <span style="font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 80.000,00</span>
+          </div>
+          <div style="padding: 16px; border-radius: 16px; background: #F4F5FB; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; color: #55547A; font-weight: 600">Saiu no ano</span>
+            <span style="font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 26.117,00</span>
+          </div>
+          <div style="padding: 16px; border-radius: 16px; background: #E3F5EC; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; color: #0A6B47; font-weight: 600">Sobrou no ano</span>
+            <span style="font-size: 20px; font-weight: 800; color: #0A6B47; font-variant-numeric: tabular-nums">R$ 53.883,00</span>
+          </div>
+          <div style="padding: 16px; border-radius: 16px; background: #F4F5FB; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 13px; color: #55547A; font-weight: 600">Gasto médio por mês</span>
+            <span style="font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 2.611,70</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+      <section aria-labelledby="gastos-titulo" style="flex: 3 1 420px; min-width: 0; background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+          <h2 id="gastos-titulo" style="margin: 0; font-size: 18px; font-weight: 800">Gastos por cartão e Pix</h2>
+          <a href="Lancamentos.dc.html" style="font-size: 14px; font-weight: 700; text-decoration: none">Ver lançamentos</a>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
+          <li style="display: grid; grid-template-columns: minmax(130px, 32%) 1fr auto; gap: 14px; align-items: center">
+            <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px"><span style="width: 30px; height: 30px; border-radius: 9px; background: #FFF3D6; color: #8A5A00; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800">BOL</span>Boleto Nubank</span>
+            <span style="height: 12px; border-radius: 6px; background: #EEEFF6; overflow: hidden"><span style="display: block; height: 100%; width: 100%; border-radius: 6px; background: {{accent}}"></span></span>
+            <span style="font-weight: 700; font-variant-numeric: tabular-nums; min-width: 104px; text-align: right">R$ 749,90</span>
+          </li>
+          <li style="display: grid; grid-template-columns: minmax(130px, 32%) 1fr auto; gap: 14px; align-items: center">
+            <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px"><span style="width: 30px; height: 30px; border-radius: 9px; background: #EEEAFF; color: #4A2FE0; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M2 10h20"></path></svg></span>Cartão Nubank</span>
+            <span style="height: 12px; border-radius: 6px; background: #EEEFF6; overflow: hidden"><span style="display: block; height: 100%; width: 30%; border-radius: 6px; background: {{accent}}"></span></span>
+            <span style="font-weight: 700; font-variant-numeric: tabular-nums; min-width: 104px; text-align: right">R$ 222,40</span>
+          </li>
+          <li style="display: grid; grid-template-columns: minmax(130px, 32%) 1fr auto; gap: 14px; align-items: center">
+            <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px"><span style="width: 30px; height: 30px; border-radius: 9px; background: #DDF6F1; color: #0B6B5C; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l4 4-4 4-4-4z"></path><path d="M12 14l4 4-4 4-4-4z"></path><path d="M2 12l4-4 4 4-4 4z"></path><path d="M14 12l4-4 4 4-4 4z"></path></svg></span>Pix Santander</span>
+            <span style="height: 12px; border-radius: 6px; background: #EEEFF6; overflow: hidden"><span style="display: block; height: 100%; width: 16%; border-radius: 6px; background: {{accent}}"></span></span>
+            <span style="font-weight: 700; font-variant-numeric: tabular-nums; min-width: 104px; text-align: right">R$ 120,00</span>
+          </li>
+          <li style="display: grid; grid-template-columns: minmax(130px, 32%) 1fr auto; gap: 14px; align-items: center">
+            <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px"><span style="width: 30px; height: 30px; border-radius: 9px; background: #EEEAFF; color: #4A2FE0; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="3"></rect><path d="M2 10h20"></path></svg></span>Cartão Inter</span>
+            <span style="height: 12px; border-radius: 6px; background: #EEEFF6; overflow: hidden"><span style="display: block; height: 100%; width: 11%; border-radius: 6px; background: {{accent}}"></span></span>
+            <span style="font-weight: 700; font-variant-numeric: tabular-nums; min-width: 104px; text-align: right">R$ 85,00</span>
+          </li>
+          <li style="display: grid; grid-template-columns: minmax(130px, 32%) 1fr auto; gap: 14px; align-items: center">
+            <span style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px"><span style="width: 30px; height: 30px; border-radius: 9px; background: #DDF6F1; color: #0B6B5C; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l4 4-4 4-4-4z"></path><path d="M12 14l4 4-4 4-4-4z"></path><path d="M2 12l4-4 4 4-4 4z"></path><path d="M14 12l4-4 4 4-4 4z"></path></svg></span>Pix Nubank</span>
+            <span style="height: 12px; border-radius: 6px; background: #EEEFF6; overflow: hidden"><span style="display: block; height: 100%; width: 15%; border-radius: 6px; background: {{accent}}"></span></span>
+            <span style="font-weight: 700; font-variant-numeric: tabular-nums; min-width: 104px; text-align: right">R$ 114,40</span>
+          </li>
+        </ul>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; padding-top: 18px; border-top: 1px solid #ECEDF5">
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #55547A; font-weight: 600">Todo o cartão</span><span style="font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 307,40</span></div>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #55547A; font-weight: 600">Todo o Pix</span><span style="font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 234,40</span></div>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #55547A; font-weight: 600">Boletos</span><span style="font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums">R$ 749,90</span></div>
+        </div>
+      </section>
+
+      <div style="flex: 2 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+        <section aria-labelledby="contas-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+            <h2 id="contas-titulo" style="margin: 0; font-size: 18px; font-weight: 800">Contas a pagar</h2>
+            <span style="font-size: 14px; font-weight: 700; color: #55547A">3 de 4 pagas</span>
+          </div>
+          <div style="height: 10px; border-radius: 5px; background: #EEEFF6; overflow: hidden" role="img" aria-label="75% das contas pagas"><span style="display: block; height: 100%; width: 75%; border-radius: 5px; background: #0E8F5E"></span></div>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0">
+              <span style="width: 24px; height: 24px; border-radius: 8px; border: 2px solid #D03B3B; box-sizing: border-box"></span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">IPTU</span><span style="font-size: 13px; color: #B02E2E; font-weight: 600">Venceu 12/10</span></span>
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">R$ 210,00</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 24px; height: 24px; border-radius: 8px; background: #0E8F5E; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700; color: #6A6990; text-decoration: line-through">Internet</span><span style="font-size: 13px; color: #55547A">Paga 05/10 · baixa automática</span></span>
+              <span style="font-weight: 700; color: #6A6990; font-variant-numeric: tabular-nums">R$ 99,90</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 24px; height: 24px; border-radius: 8px; background: #0E8F5E; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700; color: #6A6990; text-decoration: line-through">Condomínio</span><span style="font-size: 13px; color: #55547A">Paga 20/10 · baixa automática</span></span>
+              <span style="font-weight: 700; color: #6A6990; font-variant-numeric: tabular-nums">R$ 650,00</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 24px; height: 24px; border-radius: 8px; background: #0E8F5E; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg></span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700; color: #6A6990; text-decoration: line-through">Academia</span><span style="font-size: 13px; color: #55547A">Paga 08/10 · baixa automática</span></span>
+              <span style="font-weight: 700; color: #6A6990; font-variant-numeric: tabular-nums">R$ 120,00</span>
+            </li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="saldos-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+          <h2 id="saldos-titulo" style="margin: 0; font-size: 18px; font-weight: 800">Contas e cartões</h2>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0">
+              <span style="width: 36px; height: 36px; border-radius: 11px; background: #8A2BE2; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px">Nu</span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">Nubank</span><span style="font-size: 13px; color: #55547A">Conta corrente</span></span>
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">R$ 12.480,50</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 36px; height: 36px; border-radius: 11px; background: #1F66C9; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px">In</span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">Inter</span><span style="font-size: 13px; color: #55547A">Conta corrente</span></span>
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">R$ 980,00</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 36px; height: 36px; border-radius: 11px; background: #D03B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px">Sa</span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">Santander</span><span style="font-size: 13px; color: #55547A">Conta corrente</span></span>
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">R$ 1.250,00</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #ECEDF5">
+              <span style="width: 36px; height: 36px; border-radius: 11px; background: #17163A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px">Nu</span>
+              <span style="flex: 1; display: flex; flex-direction: column"><span style="font-weight: 700">Cartão Nubank</span><span style="font-size: 13px; color: #55547A">Fatura vence 10/11</span></span>
+              <span style="font-weight: 700; font-variant-numeric: tabular-nums">R$ 812,40</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#5B3DF5","options":["#5B3DF5","#0E8F5E","#E0458B","#1F66C9"]},"incomeColor":{"editor":"color","default":"#2A78D6"},"expenseColor":{"editor":"color","default":"#EB6834"},"$preview":{"width":1440,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#5B3DF5',
+      incomeColor: this.props.incomeColor ?? '#2A78D6',
+      expenseColor: this.props.expenseColor ?? '#EB6834',
+    };
+  }
+}
+</script>
+</body>
+</html>

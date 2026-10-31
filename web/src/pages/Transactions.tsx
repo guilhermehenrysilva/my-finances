@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api, METHOD_LABELS, type Method, type Transaction } from '../api.ts';
 import { money, monthName, shortDate } from '../format.ts';
-import { Icon, MethodBadge } from '../icons.tsx';
+import { Icon, MethodBadge, PluggyBadge } from '../icons.tsx';
 import type { PageProps } from '../App.tsx';
 
 const METHODS = Object.keys(METHOD_LABELS) as Method[];
 
 const signed = (r: Transaction) => (r.flow === 'OUT' ? r.amount : -r.amount);
 
-export function TransactionsPage({ month, version, refresh }: PageProps) {
+export function TransactionsPage({ month, version, refresh, pluggy }: PageProps) {
   const [rows, setRows] = useState<Transaction[]>([]);
   const [account, setAccount] = useState('');
   const [method, setMethod] = useState<Method | ''>('');
@@ -94,10 +94,13 @@ export function TransactionsPage({ month, version, refresh }: PageProps) {
       {error && <p className="error-text">{error}</p>}
 
       <section className="card" style={{ padding: '16px 24px' }}>
-        <p className="muted" style={{ margin: 0 }}>
-          {visible.length} lançamento(s) · {countedVisible.length} contam no mês ·
-          total <b style={{ color: 'var(--text)' }}>{money(countedVisible.reduce((s, r) => s + signed(r), 0))}</b>
-        </p>
+        <div className="title-row">
+          <p className="muted" style={{ margin: 0 }}>
+            {visible.length} lançamento(s) · {countedVisible.length} contam no mês ·
+            total <b style={{ color: 'var(--text)' }}>{money(countedVisible.reduce((s, r) => s + signed(r), 0))}</b>
+          </p>
+          <PluggyBadge {...pluggy} />
+        </div>
         {visible.length === 0 ? (
           <p className="muted">Nada encontrado com esses filtros.</p>
         ) : (

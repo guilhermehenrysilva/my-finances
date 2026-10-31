@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Previsão por origem</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5FB}
+a{color:#5B3DF5}a:hover{color:#4327D6}
+</style>
+</helmet>
+<div style="font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #17163A; background: #F4F5FB; min-height: 100vh; box-sizing: border-box; padding: 32px 40px 48px">
+<main style="max-width: 1160px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+
+  <header style="display: flex; flex-direction: column; gap: 4px">
+    <span style="font-size: 14px; color: #55547A; font-weight: 600">Previsão</span>
+    <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em">Próximos meses</h1>
+  </header>
+
+  <section aria-labelledby="prev-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <h2 id="prev-titulo" style="margin: 0; font-size: 20px; font-weight: 800">Previsão dos próximos meses</h2>
+      <span style="font-size: 14px; color: #55547A">Comprometido = previsto pelos bancos + cadastrado por você</span>
+    </div>
+    <div style="overflow-x: auto">
+      <table style="width: 100%; border-collapse: collapse; min-width: 940px; font-size: 14px; font-variant-numeric: tabular-nums">
+        <thead>
+          <tr style="font-size: 12px">
+            <th colspan="2" style="padding: 0"></th>
+            <th colspan="2" scope="colgroup" style="padding: 8px; background: #EEEAFF; color: #3A22C4; font-weight: 800; text-align: center; border-radius: 10px 10px 0 0">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10v8"></path><path d="M10 10v8"></path><path d="M14 10v8"></path><path d="M19 10v8"></path><path d="M3 20h18"></path></svg>Previsto pelos bancos</span>
+            </th>
+            <th style="padding: 0; width: 8px"></th>
+            <th colspan="2" scope="colgroup" style="padding: 8px; background: #FCE7F3; color: #9D174D; font-weight: 800; text-align: center; border-radius: 10px 10px 0 0">
+              <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>Cadastrado por você</span>
+            </th>
+            <th colspan="2" style="padding: 0"></th>
+          </tr>
+          <tr style="text-align: right; font-size: 13px; color: #55547A">
+            <th style="padding: 12px 8px; text-align: left; font-weight: 700">Mês</th>
+            <th style="padding: 12px 8px; font-weight: 700">Entradas</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Parcelas do cartão</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #F7F5FF">Dia a dia (média)</th>
+            <th></th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #FEF3F9">Contas a pagar</th>
+            <th style="padding: 12px 8px; font-weight: 700; background: #FEF3F9">Parcelas fora do banco</th>
+            <th style="padding: 12px 8px; font-weight: 800; color: #17163A">Comprometido</th>
+            <th style="padding: 12px 8px; font-weight: 700">Sobra prevista</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700">Nov 2026</td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 450,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.320,00</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 1.029,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 189,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 2.988,90 <small style="color: #55547A; font-weight: 600">48%</small></td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.211,10</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700">Dez 2026</td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 300,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.320,00</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 1.029,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 189,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 2.838,90 <small style="color: #55547A; font-weight: 600">46%</small></td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.361,10</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700">Jan 2027</td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 300,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.320,00</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 1.349,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 189,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 3.158,90 <small style="color: #55547A; font-weight: 600">51%</small></td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.041,10</td>
+          </tr>
+          <tr style="border-top: 1px solid #ECEDF5; text-align: right">
+            <td style="padding: 12px 8px; text-align: left; font-weight: 700">Fev 2027</td>
+            <td style="padding: 12px 8px">R$ 6.200,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 150,00</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #F7F5FF">R$ 1.320,00</td>
+            <td></td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 1.029,90</td>
+            <td style="padding: 12px 8px; color: #55547A; background: #FEF3F9">R$ 189,00</td>
+            <td style="padding: 12px 8px; font-weight: 800">R$ 2.688,90 <small style="color: #55547A; font-weight: 600">43%</small></td>
+            <td style="padding: 12px 8px; color: #0A7A50; font-weight: 700">R$ 3.511,10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #55547A">Sem banco conectado, as colunas “Previsto pelos bancos” somem e o comprometido é só o que você cadastrou.</p>
+  </section>
+
+  <section aria-labelledby="parc-titulo" style="background: #FFFFFF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 1px 2px rgba(23,22,58,0.05), 0 8px 24px rgba(23,22,58,0.05)">
+    <h2 id="parc-titulo" style="margin: 0; font-size: 20px; font-weight: 800">Compras parceladas</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 8px">
+          <h3 style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #3A22C4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l9-6 9 6"></path><path d="M5 10v8"></path><path d="M10 10v8"></path><path d="M14 10v8"></path><path d="M19 10v8"></path><path d="M3 20h18"></path></svg>Nos cartões</h3>
+          <span style="font-size: 13px; color: #55547A; font-weight: 600">R$ 450,00/mês</span>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; font-size: 14px; font-variant-numeric: tabular-nums">
+          <li style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Geladeira <span style="font-size: 12px; padding: 2px 7px; border-radius: 999px; background: #FFF3D6; color: #8A5A00">última parcela</span></b><small style="font-size: 12px; color: #6A6990">Cartão Nubank · 10 de 10 · termina em nov</small></span><b>R$ 150,00</b></li>
+          <li style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Amazon</b><small style="font-size: 12px; color: #6A6990">Cartão Nubank · 3 de 5 · termina em jan</small></span><b>R$ 150,00</b></li>
+          <li style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Notebook</b><small style="font-size: 12px; color: #6A6990">Cartão Nubank · 6 de 12 · termina em abr</small></span><b>R$ 150,00</b></li>
+        </ul>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 8px">
+          <h3 style="margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #9D174D"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>Cadastradas por você</h3>
+          <span style="font-size: 13px; color: #55547A; font-weight: 600">R$ 189,00/mês</span>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; font-size: 14px; font-variant-numeric: tabular-nums">
+          <li style="display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #ECEDF5"><span style="flex: 1; display: flex; flex-direction: column"><b>Curso de inglês</b><small style="font-size: 12px; color: #6A6990">Contas a pagar · 2 de 10 · termina em jun/2027</small></span><b>R$ 189,00</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

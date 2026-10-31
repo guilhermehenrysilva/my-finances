@@ -1,4 +1,5 @@
 // Ícones de traço, herdam a cor do texto (currentColor).
+import type { ReactNode } from 'react';
 import type { Method } from './api.ts';
 
 const PATHS = {
@@ -27,6 +28,8 @@ const PATHS = {
   calendar: <><rect x="3" y="4" width="18" height="18" rx="3" /><path d="M16 2v4" /><path d="M8 2v4" /><path d="M3 10h18" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /><path d="M8 18h.01" /><path d="M12 18h.01" /></>,
   download: <><path d="M12 3v12" /><path d="M7 10l5 5 5-5" /><path d="M5 21h14" /></>,
   upload: <><path d="M12 21V9" /><path d="M7 14l5-5 5 5" /><path d="M5 3h14" /></>,
+  bank: <><path d="M3 10l9-6 9 6" /><path d="M5 10v8" /><path d="M10 10v8" /><path d="M14 10v8" /><path d="M19 10v8" /><path d="M3 20h18" /></>,
+  pencil: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></>,
 } as const;
 
 export type IconName = keyof typeof PATHS;
@@ -46,6 +49,48 @@ export function Hint({ text }: { text: string }) {
     <span className="hint" tabIndex={0} aria-label={text}>
       <Icon name="info" size={16} stroke={2.2} />
       <span className="hint-tip" role="tooltip">{text}</span>
+    </span>
+  );
+}
+
+/**
+ * Selo nas partes que dependem dos dados dos bancos. Só aparece enquanto o Meu Pluggy não está pronto
+ * (sem credenciais no .env ou sem banco cadastrado) e leva para Configurações.
+ */
+export function PluggyBadge({ ready, configured }: { ready: boolean; configured: boolean }) {
+  if (ready) return null;
+  const text = configured
+    ? 'Esta parte usa os dados dos bancos. Cadastre o itemId de cada banco em Configurações → Bancos conectados.'
+    : 'Esta parte usa os dados dos bancos pelo Meu Pluggy. Configure o Meu Pluggy em Configurações (credenciais no .env e itemId de cada banco).';
+  return (
+    <a className="mp-badge hint" href="#/config" aria-label={`Funcionalidade MeuPluggy. ${text}`}>
+      <span className="mp-dot" aria-hidden="true">!</span>
+      Funcionalidade MeuPluggy
+      <span className="hint-tip" role="tooltip">{text}</span>
+    </a>
+  );
+}
+
+/** De onde vem um valor: dos bancos (Meu Pluggy) ou cadastrado por você no app. */
+export type Source = 'bank' | 'you';
+
+export const SOURCE_LABELS: Record<Source, string> = { bank: 'Dos bancos', you: 'Por você' };
+
+/** Etiqueta da origem, com ícone e cor próprios (roxo para bancos, rosa para você). */
+export function SourceTag({ source, children }: { source: Source; children?: ReactNode }) {
+  return (
+    <span className={`source-tag src-${source}`}>
+      <Icon name={source === 'bank' ? 'bank' : 'pencil'} size={14} stroke={2.4} />
+      {children ?? SOURCE_LABELS[source]}
+    </span>
+  );
+}
+
+/** Ícone da origem num quadradinho colorido. */
+export function SourceIcon({ source, size = 36 }: { source: Source; size?: number }) {
+  return (
+    <span className={`source-icon src-${source}`} style={{ width: size, height: size }}>
+      <Icon name={source === 'bank' ? 'bank' : 'pencil'} size={Math.round(size * 0.5)} stroke={2.2} />
     </span>
   );
 }

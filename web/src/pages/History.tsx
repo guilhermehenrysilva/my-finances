@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api, METHOD_LABELS, type Dashboard, type Method, type Transaction, type YearSummary } from '../api.ts';
 import { currentMonth, money, monthLabel, shortDate } from '../format.ts';
-import { Icon, MethodBadge } from '../icons.tsx';
+import { Icon, MethodBadge, SourceIcon, type Source } from '../icons.tsx';
+import { SpendBySource } from '../SpendBySource.tsx';
 import { YearChart } from '../YearChart.tsx';
 import type { PageProps } from '../App.tsx';
 
@@ -34,8 +35,13 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
   const years = data.years;
   const idx = years.indexOf(year);
   const thisMonth = currentMonth();
+  // Sem banco conectado, as colunas dos bancos somem: as saídas são só as contas pagas.
+  const banks = data.hasBanks;
+  const withData = data.months.filter((m) => m.hasData);
   const other = (m: YearSummary['months'][number]) =>
     Object.entries(m.byMethod).filter(([k]) => !MAIN_METHODS.includes(k as Method)).reduce((s, [, v]) => s + (v ?? 0), 0);
+  const sum = (fn: (m: YearSummary['months'][number]) => number) => withData.reduce((s, m) => s + fn(m), 0);
+  const orDash = (v: number) => (v ? money(v) : '—');
 
   return (
     <div className="stack">
@@ -57,7 +63,14 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
         <div className="tile"><span className="tile-icon i-income"><Icon name="up" stroke={2.2} /></span>
           <div><span className="tile-label">Entrou em {data.year}</span><span className="tile-value">{money(data.totals.income)}</span></div></div>
         <div className="tile"><span className="tile-icon i-expense"><Icon name="down" stroke={2.2} /></span>
-          <div><span className="tile-label">Saiu em {data.year}</span><span className="tile-value">{money(data.totals.expenses)}</span></div></div>
+          <div>
+            <span className="tile-label">Saiu em {data.year}</span><span className="tile-value">{money(data.totals.expenses)}</span>
+            {banks && (
+              <span className="tile-sub">
+                <b className="src-bank-text">Bancos {money(data.totals.bank)}</b> + <b className="src-you-text">Você {money(data.totals.manual)}</b>
+              </span>
+            )}
+          </div></div>
         <div className={`tile ${data.totals.result >= 0 ? 'tile-good' : 'tile-bad'}`}>
           <span className="tile-icon"><Icon name={data.totals.result >= 0 ? 'trend' : 'trendDown'} stroke={2.2} /></span>
           <div><span className="tile-label">{data.totals.result >= 0 ? 'Sobrou' : 'Faltou'} no ano</span><span className="tile-value">{money(data.totals.result)}</span></div></div>
@@ -79,26 +92,39 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
       <section className="card" aria-labelledby="hist-meses">
         <div className="card-head">
           <h2 id="hist-meses">Mês a mês</h2>
-          <span className="sub">Clique num mês para ver os gastos</span>
+          <span className="sub">{banks && 'Saídas = dos bancos + por você · '}Clique num mês para ver os gastos</span>
         </div>
         <div className="table-wrap">
-          <table className="history-table" style={{ minWidth: 760 }}>
+          <table className="history-table" style={{ minWidth: banks ? 900 : 520 }}>
             <thead>
+              {banks && (
+                <tr>
+                  <th colSpan={4} aria-hidden="true" />
+                  <th colSpan={4} scope="colgroup" className="group g-bank"><span><Icon name="bank" size={14} stroke={2.4} />Dos bancos</span></th>
+                  <th className="g-gap" aria-hidden="true" />
+                  <th scope="colgroup" className="group g-you"><span><Icon name="pencil" size={14} stroke={2.4} />Por você</span></th>
+                </tr>
+              )}
               <tr>
                 <th>Mês</th>
                 <th className="r">Entradas</th>
                 <th className="r">Saídas</th>
                 <th className="r">Resultado</th>
-                <th className="r">Cartão</th>
-                <th className="r">Pix</th>
-                <th className="r">Boleto</th>
-                <th className="r">Outros</th>
+                {banks && (
+                  <>
+                    {MAIN_METHODS.map((k) => <th key={k} className="r g-bank">{METHOD_LABELS[k]}</th>)}
+                    <th className="r g-bank">Outros</th>
+                    <th className="g-gap" aria-hidden="true" />
+                    <th className="r g-you">Contas pagas</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody>
               {data.months.map((m, i) => {
                 const future = m.month > thisMonth;
                 const result = m.income - m.expenses;
+                const cell = (v: number) => (m.hasData ? orDash(v) : '—');
                 return (
                   <tr key={m.month} className={`${m.month === selected ? 'selected' : ''} ${m.hasData ? '' : 'empty'}`}>
                     <td>
@@ -108,16 +134,16 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
                       </button>
                       {!m.hasData && <small className="muted"> {future ? 'por vir' : 'sem dados'}</small>}
                     </td>
-                    {m.hasData ? (
+                    <td className="num">{m.hasData ? money(m.income) : '—'}</td>
+                    <td className="num" style={{ fontWeight: 800 }}>{m.hasData ? money(m.expenses) : '—'}</td>
+                    <td className={`num ${m.hasData ? (result >= 0 ? 'good-text' : 'error-text') : ''}`}>{m.hasData ? money(result) : '—'}</td>
+                    {banks && (
                       <>
-                        <td className="num">{money(m.income)}</td>
-                        <td className="num">{money(m.expenses)}</td>
-                        <td className={`num ${result >= 0 ? 'good-text' : 'error-text'}`}>{money(result)}</td>
-                        {MAIN_METHODS.map((k) => <td key={k} className="num muted">{m.byMethod[k] ? money(m.byMethod[k]!) : '—'}</td>)}
-                        <td className="num muted">{other(m) ? money(other(m)) : '—'}</td>
+                        {MAIN_METHODS.map((k) => <td key={k} className="num muted g-bank">{cell(m.byMethod[k] ?? 0)}</td>)}
+                        <td className="num muted g-bank">{cell(other(m))}</td>
+                        <td className="g-gap" aria-hidden="true" />
+                        <td className="num muted g-you">{cell(m.manual)}</td>
                       </>
-                    ) : (
-                      Array.from({ length: 7 }, (_, k) => <td key={k} className="num muted">—</td>)
                     )}
                   </tr>
                 );
@@ -129,12 +155,23 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
                 <td className="num">{money(data.totals.income)}</td>
                 <td className="num">{money(data.totals.expenses)}</td>
                 <td className={`num ${data.totals.result >= 0 ? 'good-text' : 'error-text'}`}>{money(data.totals.result)}</td>
-                {MAIN_METHODS.map((k) => {
-                  const t = data.months.filter((m) => m.hasData).reduce((s, m) => s + (m.byMethod[k] ?? 0), 0);
-                  return <td key={k} className="num">{t ? money(t) : '—'}</td>;
-                })}
-                <td className="num">{(() => { const t = data.months.filter((m) => m.hasData).reduce((s, m) => s + other(m), 0); return t ? money(t) : '—'; })()}</td>
+                {banks && (
+                  <>
+                    {MAIN_METHODS.map((k) => <td key={k} className="num g-bank">{orDash(sum((m) => m.byMethod[k] ?? 0))}</td>)}
+                    <td className="num g-bank">{orDash(sum(other))}</td>
+                    <td className="g-gap" aria-hidden="true" />
+                    <td className="num g-you">{orDash(data.totals.manual)}</td>
+                  </>
+                )}
               </tr>
+              {banks && (
+                <tr className="group-totals">
+                  <td colSpan={4} />
+                  <td colSpan={4} className="g-bank">{money(data.totals.bank)} dos bancos</td>
+                  <td className="g-gap" aria-hidden="true" />
+                  <td className="g-you">{money(data.totals.manual)} por você</td>
+                </tr>
+              )}
             </tfoot>
           </table>
         </div>
@@ -145,18 +182,23 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
   );
 }
 
+type TopItem = { key: string; description: string; amount: number; date: string; where: string; source: Source; method?: Method };
+
 function MonthDetail({ month, version, openMonth }: { month: string; version: number; openMonth: PageProps['openMonth'] }) {
   const [dash, setDash] = useState<Dashboard | null>(null);
-  const [top, setTop] = useState<Transaction[]>([]);
+  const [txs, setTxs] = useState<Transaction[]>([]);
 
   useEffect(() => {
     api.get<Dashboard>(`/dashboard?month=${month}`).then(setDash, () => setDash(null));
-    api.get<Transaction[]>(`/transactions?month=${month}&flow=OUT&ignored=hide`)
-      .then((rows) => setTop([...rows].sort((a, b) => b.amount - a.amount).slice(0, TOP_EXPENSES)), () => setTop([]));
+    api.get<Transaction[]>(`/transactions?month=${month}&flow=OUT&ignored=hide`).then(setTxs, () => setTxs([]));
   }, [month, version]);
 
   if (!dash) return null;
-  const maxGroup = Math.max(...dash.expenses.groups.map((g) => g.total), 1);
+  // Maiores gastos das duas origens juntas, cada um com a sua etiqueta.
+  const top: TopItem[] = [
+    ...txs.map((t): TopItem => ({ key: t.id, description: t.description, amount: t.amount, date: t.date, where: t.account_label, source: 'bank', method: t.method })),
+    ...dash.expenses.manual.items.map((b): TopItem => ({ key: `b${b.id}`, description: b.description, amount: b.amount, date: b.paid_at, where: 'Contas a pagar', source: 'you' })),
+  ].sort((a, b) => b.amount - a.amount).slice(0, TOP_EXPENSES);
 
   return (
     <section className="card" aria-labelledby="hist-detalhe">
@@ -170,42 +212,33 @@ function MonthDetail({ month, version, openMonth }: { month: string; version: nu
         </div>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn btn-ghost" onClick={() => openMonth(month, 'dashboard')}>Abrir no dashboard</button>
-          <button className="btn" onClick={() => openMonth(month, 'lancamentos')}>Ver todos os lançamentos</button>
+          {dash.hasBanks && <button className="btn" onClick={() => openMonth(month, 'lancamentos')}>Ver todos os lançamentos</button>}
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-wide">
-          <h3 style={{ marginBottom: 12 }}>Por cartão e Pix</h3>
-          {dash.expenses.groups.length === 0 ? <p className="muted">Nenhum gasto neste mês.</p> : (
-            <ul className="bars">
-              {dash.expenses.groups.map((g) => (
-                <li key={`${g.account_id}-${g.method}`} title={`${g.count} lançamento(s)`}>
-                  <span className="bar-label"><MethodBadge method={g.method} />{METHOD_LABELS[g.method]} {g.account_label}</span>
-                  <span className="bar-track"><span className="bar-fill" style={{ width: `${(Math.max(g.total, 0) / maxGroup) * 100}%` }} /></span>
-                  <span className="bar-value">{money(g.total)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="col-narrow" style={{ gap: 12 }}>
-          <h3>Maiores gastos</h3>
-          {top.length === 0 ? <p className="muted">Nenhum gasto neste mês.</p> : (
-            <ul className="list">
-              {top.map((t) => (
-                <li key={t.id}>
-                  <MethodBadge method={t.method} />
-                  <span className="grow">
-                    <b style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</b>
-                    <small>{shortDate(t.date)} · {t.account_label}</small>
-                  </span>
-                  <span className="num">{money(t.amount)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      <SpendBySource data={dash} />
+
+      <div className="stack" style={{ gap: 4 }}>
+        <h3>Maiores gastos</h3>
+        {top.length === 0 ? <p className="muted">Nenhum gasto neste mês.</p> : (
+          <ul className="list">
+            {top.map((t) => (
+              <li key={t.key}>
+                {t.method ? <MethodBadge method={t.method} /> : <SourceIcon source="you" size={30} />}
+                <span className="grow">
+                  <b style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</b>
+                  <small>
+                    {shortDate(t.date)} ·{' '}
+                    <span className={t.source === 'bank' ? 'src-bank-text' : 'src-you-text'}>
+                      {t.source === 'bank' ? `Banco · ${t.where}` : `Por você · ${t.where}`}
+                    </span>
+                  </small>
+                </span>
+                <span className="num">{money(t.amount)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

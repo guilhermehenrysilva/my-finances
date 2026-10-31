@@ -23,6 +23,8 @@ export type ForecastMonth = {
   month: string;
   income: number;
   installments: number;
+  cardInstallments: number; // parcelas dos cartões (dos bancos)
+  manualInstallments: number; // contas "por X meses" (cadastradas por você)
   fixed: number;
   variable: number;
   committed: number; // parcelas + contas fixas
@@ -217,7 +219,8 @@ function variableAverage(installmentMonths: Map<string, number>): number {
 
 export function forecast(monthsAhead: number, includeVariable: boolean) {
   const installments = listInstallments();
-  const byMonth = installmentsByMonth(installments);
+  const cardByMonth = installmentsByMonth(installments.filter((i) => !i.manual));
+  const manualByMonth = installmentsByMonth(installments.filter((i) => i.manual));
   // A média usa também as parcelas já terminadas dos meses passados.
   const variableAvg = variableAverage(installmentsByMonth(allInstallmentsForHistory()));
   const thisMonth = today().slice(0, 7);
@@ -225,13 +228,17 @@ export function forecast(monthsAhead: number, includeVariable: boolean) {
   const months: ForecastMonth[] = Array.from({ length: monthsAhead }, (_, k) => {
     const month = addMonths(thisMonth, k);
     const income = recurringIncome(month);
-    const inst = byMonth.get(month) ?? 0;
+    const card = cardByMonth.get(month) ?? 0;
+    const manual = manualByMonth.get(month) ?? 0;
+    const inst = card + manual;
     const fixed = fixedBills(month);
     const variable = includeVariable ? variableAvg : 0;
     return {
       month,
       income: cents(income),
       installments: cents(inst),
+      cardInstallments: cents(card),
+      manualInstallments: cents(manual),
       fixed: cents(fixed),
       variable: cents(variable),
       committed: cents(inst + fixed),

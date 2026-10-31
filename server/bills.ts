@@ -112,4 +112,17 @@ export function matchBills(): void {
     }
     if (tx) mark.run(tx.date, tx.id, b.id);
   }
+
+  // Contas já marcadas como pagas à mão: se o pagamento aparece depois no extrato, liga o lançamento a ela.
+  // Assim a conta deixa de contar sozinha como saída e o lançamento conta uma vez só.
+  const paidByHand = db.prepare(`
+    SELECT id, month, match_text FROM bills
+    WHERE paid_at IS NOT NULL AND transaction_id IS NULL AND card_account_id IS NULL AND hidden = 0
+      AND match_text IS NOT NULL AND match_text <> ''
+  `).all() as { id: number; month: string; match_text: string }[];
+  const link = db.prepare('UPDATE bills SET transaction_id = ? WHERE id = ?');
+  for (const b of paidByHand) {
+    const tx = findByText.get(b.month, b.match_text) as { id: string } | undefined;
+    if (tx) link.run(tx.id, b.id);
+  }
 }

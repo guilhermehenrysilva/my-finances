@@ -1,10 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { api, type ImportResult, type Settings } from '../api.ts';
 import { relativeTime } from '../format.ts';
-import { BankAvatar, Icon } from '../icons.tsx';
+import { BankAvatar, Icon, PluggyBadge } from '../icons.tsx';
 import type { PageProps } from '../App.tsx';
 
-export function SettingsPage({ version, refresh }: PageProps) {
+export function SettingsPage({ version, refresh, pluggy }: PageProps) {
   const [data, setData] = useState<Settings | null>(null);
   const [conn, setConn] = useState({ itemId: '', label: '' });
   const [owner, setOwner] = useState('');
@@ -62,7 +62,7 @@ export function SettingsPage({ version, refresh }: PageProps) {
       )}
 
       <section className="card">
-        <h2>Bancos conectados</h2>
+        <span className="title-row"><h2>Bancos conectados</h2><PluggyBadge {...pluggy} /></span>
         <p className="muted">
           Para cada banco: conecte em meu.pluggy.ai, autorize o conector MeuPluggy na sua aplicação em dashboard.pluggy.ai e
           cole aqui o <em>itemId</em> gerado. O plano gratuito permite até 5.

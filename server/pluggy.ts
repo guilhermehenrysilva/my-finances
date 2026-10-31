@@ -50,6 +50,19 @@ export type PluggyTransaction = {
   } | null;
 };
 
+export type PluggyInvestment = {
+  id: string;
+  name: string;
+  type: string; // FIXED_INCOME, MUTUAL_FUND, SECURITY, EQUITY, ETF, COE, OTHER
+  subtype?: string | null;
+  balance: number;
+  issuer?: string | null;
+  dueDate?: string | null;
+  rate?: number | null;
+  rateType?: string | null;
+  status?: string | null;
+};
+
 export type PluggyBill = {
   id: string;
   dueDate: string;
@@ -107,4 +120,5 @@ export const pluggy = {
   getAccounts: async (itemId: string) => (await get<Page<PluggyAccount>>('/accounts', { itemId })).results,
   getTransactions: (accountId: string, from: string) => getAllPages<PluggyTransaction>('/transactions', { accountId, from }),
   getBills: async (accountId: string) => (await get<Page<PluggyBill>>('/bills', { accountId })).results,
+  getInvestments: (itemId: string) => getAllPages<PluggyInvestment>('/investments', { itemId }),
 };

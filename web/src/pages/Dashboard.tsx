@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { api, METHOD_LABELS, type Dashboard, type Forecast, type ForecastMonth, type YearSummary } from '../api.ts';
+import { api, INVESTMENT_LABELS, type Dashboard, type Forecast, type ForecastMonth, type YearSummary } from '../api.ts';
 import { money, shortDate, shortMonthLabel, todayStr } from '../format.ts';
-import { BankAvatar, Icon, MethodBadge } from '../icons.tsx';
+import { BankAvatar, Icon, PluggyBadge } from '../icons.tsx';
+import { SourceSplit, SpendBySource } from '../SpendBySource.tsx';
 import { YearChart } from '../YearChart.tsx';
 import type { PageProps } from '../App.tsx';
 
-export function DashboardPage({ month, version, navigate }: PageProps) {
+export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
   const [data, setData] = useState<Dashboard | null>(null);
   const [year, setYear] = useState(month.slice(0, 4));
   const [yearData, setYearData] = useState<YearSummary | null>(null);
@@ -34,8 +35,6 @@ export function DashboardPage({ month, version, navigate }: PageProps) {
   const positive = data.result >= 0;
   const income = data.income.total;
   const keptPct = income > 0 ? Math.round((data.result / income) * 100) : null;
-  const maxGroup = Math.max(...data.expenses.groups.map((g) => g.total), 1);
-  const byMethod = new Map(data.expenses.byMethod.map((m) => [m.method, m.total]));
   const today = todayStr();
   const paidPct = data.bills.count ? Math.round((data.bills.paidCount / data.bills.count) * 100) : 0;
 
@@ -55,9 +54,18 @@ export function DashboardPage({ month, version, navigate }: PageProps) {
         <div className="tile">
           <span className="tile-icon i-expense"><Icon name="down" stroke={2.2} /></span>
           <div>
-            <span className="tile-label">Saídas</span>
+            <span className="tile-label">Saídas · total</span>
             <span className="tile-value">{money(data.expenses.total)}</span>
-            <span className="tile-sub">Cartões, Pix e boletos</span>
+            {data.hasBanks ? (
+              <>
+                <SourceSplit bank={data.expenses.bank} manual={data.expenses.manual.total} />
+                <span className="tile-sub">
+                  <b className="src-bank-text">Bancos {money(data.expenses.bank)}</b> + <b className="src-you-text">Você {money(data.expenses.manual.total)}</b>
+                </span>
+              </>
+            ) : (
+              <span className="tile-sub">{data.expenses.manual.items.length} conta(s) paga(s)</span>
+            )}
           </div>
         </div>
         <div className={`tile ${positive ? 'tile-good' : 'tile-bad'}`}>
@@ -66,19 +74,35 @@ export function DashboardPage({ month, version, navigate }: PageProps) {
             <span className="tile-label">Resultado do mês</span>
             <span className="tile-value">{positive ? '+ ' : ''}{money(data.result)}</span>
             <span className="tile-sub">
-              {positive ? 'Positivo' : 'Negativo'}
+              Entradas − todas as saídas
+              {!positive && ' · negativo'}
               {keptPct !== null && positive && ` · sobrou ${keptPct}% da entrada`}
             </span>
           </div>
         </div>
+        {data.hasBanks ? (
         <div className="tile">
-          <span className="tile-icon i-accent"><Icon name="wallet" stroke={2.2} /></span>
+          <span className="tile-icon i-accent"><Icon name="bank" stroke={2.2} /></span>
           <div>
             <span className="tile-label">Saldo em contas</span>
             <span className="tile-value">{money(data.bankTotal)}</span>
-            <span className="tile-sub">Faturas abertas: {money(data.cardTotal)}</span>
+            <span className="tile-sub">
+              {data.investmentsTotal > 0 && <>Investimentos: {money(data.investmentsTotal)} · </>}
+              Faturas abertas: {money(data.cardTotal)}
+            </span>
+            <PluggyBadge {...pluggy} />
           </div>
         </div>
+        ) : (
+        <div className="tile">
+          <span className="tile-icon i-boleto"><Icon name="check" stroke={2.2} /></span>
+          <div>
+            <span className="tile-label">Falta pagar</span>
+            <span className="tile-value">{money(data.bills.pendingTotal)}</span>
+            <span className="tile-sub">{data.bills.count ? `${data.bills.paidCount} de ${data.bills.count} contas pagas` : 'Nenhuma conta cadastrada'}</span>
+          </div>
+        </div>
+        )}
       </section>
 
       {next && next.committed > 0 && (
@@ -128,38 +152,22 @@ export function DashboardPage({ month, version, navigate }: PageProps) {
         </section>
       )}
 
-      <div className="row">
-        <section className="card col-wide" aria-labelledby="gastos-titulo">
-          <div className="card-head">
-            <h2 id="gastos-titulo">Gastos por cartão e Pix</h2>
-            <button className="link-btn" onClick={() => navigate('lancamentos')}>Ver lançamentos</button>
+      <section className="card" aria-labelledby="gastos-titulo">
+        <div className="card-head">
+          <div>
+            <h2 id="gastos-titulo">Saídas do mês</h2>
+            <span className="sub">{data.hasBanks ? 'De onde veio cada valor que saiu' : 'Contas que você marcou como pagas'}</span>
           </div>
-          {data.expenses.groups.length === 0 ? (
-            <p className="muted">Nenhum gasto neste mês.</p>
-          ) : (
-            <ul className="bars">
-              {data.expenses.groups.map((g) => (
-                <li key={`${g.account_id}-${g.method}`} title={`${g.count} lançamento(s)`}>
-                  <span className="bar-label"><MethodBadge method={g.method} />{METHOD_LABELS[g.method]} {g.account_label}</span>
-                  <span className="bar-track"><span className="bar-fill" style={{ width: `${(Math.max(g.total, 0) / maxGroup) * 100}%` }} /></span>
-                  <span className="bar-value">{money(g.total)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {data.expenses.byMethod.length > 0 && (
-            <div className="totals-row">
-              <div><span>Todo o cartão</span><b>{money(byMethod.get('CARTAO') ?? 0)}</b></div>
-              <div><span>Todo o Pix</span><b>{money(byMethod.get('PIX') ?? 0)}</b></div>
-              <div><span>Boletos</span><b>{money(byMethod.get('BOLETO') ?? 0)}</b></div>
-              {data.expenses.byMethod.filter((m) => !['CARTAO', 'PIX', 'BOLETO'].includes(m.method)).map((m) => (
-                <div key={m.method}><span>{METHOD_LABELS[m.method]}</span><b>{money(m.total)}</b></div>
-              ))}
-            </div>
-          )}
-        </section>
+          <div className="head-total">
+            <span>Total do mês</span>
+            <b>{money(data.expenses.total)}</b>
+          </div>
+        </div>
+        <SpendBySource data={data} onOpen={navigate} />
+      </section>
 
-        <div className="col-narrow">
+      <div className="row">
+        <div className="col-wide">
           <section className="card" aria-labelledby="contas-titulo">
             <div className="card-head">
               <h2 id="contas-titulo">Contas a pagar</h2>
@@ -196,32 +204,75 @@ export function DashboardPage({ month, version, navigate }: PageProps) {
             )}
           </section>
 
+        </div>
+
+        {data.hasBanks && (
+        <div className="col-narrow">
           <section className="card" aria-labelledby="saldos-titulo">
-            <h2 id="saldos-titulo">Contas e cartões</h2>
-            {data.accounts.length === 0 ? (
+            <div className="card-head">
+              <span className="title-row">
+                <h2 id="saldos-titulo">Saldos</h2>
+                <PluggyBadge {...pluggy} />
+              </span>
+            </div>
+            {data.banks.length === 0 ? (
               <p className="muted">
-                Nenhuma conta sincronizada. <button className="link-btn" onClick={() => navigate('config')}>Conectar bancos</button>
+                Nenhum banco sincronizado. <button className="link-btn" onClick={() => navigate('config')}>Conectar bancos</button>
               </p>
             ) : (
-              <ul className="list">
-                {data.accounts.map((a) => (
-                  <li key={a.id}>
-                    <BankAvatar label={a.label} />
-                    <span className="grow">
-                      <b>{a.type === 'CREDIT' ? `Cartão ${a.label}` : a.label}</b>
-                      <small>
-                        {a.type === 'CREDIT'
-                          ? a.available_limit != null ? `Fatura aberta · disponível ${money(a.available_limit)}` : 'Fatura aberta'
-                          : a.name}
-                      </small>
-                    </span>
-                    <span className="num">{money(a.balance)}</span>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <div>
+                  {data.banks.map((bank) => (
+                    <div key={bank.itemId} className="bank-block">
+                      <div className="bank-head">
+                        <BankAvatar label={bank.label} />
+                        <span className="grow"><b>{bank.label}</b></span>
+                        <span className="num" title="Contas + investimentos">{money(bank.bankBalance + bank.investmentsTotal)}</span>
+                      </div>
+                      <ul className="bank-lines">
+                        {bank.accounts.map((a) => (
+                          <li key={a.id}>
+                            <span className="muted">
+                              {a.type === 'CREDIT'
+                                ? `Cartão · fatura aberta${a.available_limit != null ? ` · disponível ${money(a.available_limit)}` : ''}`
+                                : a.name}
+                            </span>
+                            <span className="num">{a.type === 'CREDIT' ? `− ${money(a.balance)}` : money(a.balance)}</span>
+                          </li>
+                        ))}
+                        {bank.investments.length > 0 && (
+                          <li>
+                            <span className="muted">Investimentos ({bank.investments.length})</span>
+                            <span className="num">{money(bank.investmentsTotal)}</span>
+                          </li>
+                        )}
+                        {bank.investments.map((i) => (
+                          <li key={i.id} className="sub">
+                            <span>
+                              {i.name}
+                              {i.type && <span className="tag">{INVESTMENT_LABELS[i.type] ?? i.type}</span>}
+                              {i.due_date && <> · vence {shortDate(i.due_date)}/{i.due_date.slice(2, 4)}</>}
+                            </span>
+                            <span className="num" style={{ fontWeight: 600 }}>{money(i.balance)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <div className="balance-totals">
+                  <div><span>Em contas</span><b>{money(data.bankTotal)}</b></div>
+                  <div><span>Investimentos</span><b>{money(data.investmentsTotal)}</b></div>
+                  <div><span>Total</span><b>{money(data.bankTotal + data.investmentsTotal)}</b></div>
+                </div>
+                {data.investmentsTotal === 0 && (
+                  <small className="muted">Nenhum investimento veio da Pluggy para estes bancos.</small>
+                )}
+              </>
             )}
           </section>
         </div>
+        )}
       </div>
     </div>
   );

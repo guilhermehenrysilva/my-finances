@@ -27,6 +27,15 @@
   --bad-ink: #B02E2E;
   --bad-soft: #FDECEC;
   --warn-soft: #FFF3D6;
+  /* Origem dos valores: dos bancos (Meu Pluggy) e cadastrado por você. */
+  --src-bank: #5B3DF5;
+  --src-bank-ink: #3A22C4;
+  --src-bank-soft: #EEEAFF;
+  --src-bank-tint: #F7F5FF;
+  --src-you: #DB2777;
+  --src-you-ink: #9D174D;
+  --src-you-soft: #FCE7F3;
+  --src-you-tint: #FEF3F9;
   --track: #EEEFF6;
   --radius: 20px;
   --shadow: 0 1px 2px rgba(23, 22, 58, 0.05), 0 8px 24px rgba(23, 22, 58, 0.05);
@@ -94,6 +103,7 @@ a { color: var(--accent); }
 .tile-good .tile-icon, .tile-bad .tile-icon { background: rgba(255, 255, 255, 0.18); color: #fff; }
 .i-income { background: var(--income-soft); color: var(--income-ink); }
 .i-expense { background: var(--expense-soft); color: var(--expense-ink); }
+.i-boleto { background: var(--warn-soft); color: #8A5A00; }
 .i-accent { background: var(--accent-soft); color: var(--accent-ink); }
 
 /* ---- Gráfico anual ---- */
@@ -183,6 +193,7 @@ a { color: var(--accent); }
 .tag-accent { background: var(--accent-soft); color: var(--accent-ink); }
 .tag-income { background: var(--income-soft); color: #1F5BB0; }
 .tag-warn { background: var(--warn-soft); color: #8A5A00; }
+.tag-good { background: var(--good-soft); color: var(--good-ink); }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .tags .tag { margin-left: 0; }
 
@@ -221,6 +232,30 @@ a { color: var(--accent); }
   opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.12s;
 }
 .hint:hover .hint-tip, .hint:focus-visible .hint-tip { opacity: 1; visibility: visible; }
+
+/* Selo "Funcionalidade MeuPluggy" */
+.mp-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 999px;
+  background: #FDECEC; color: #A12A2A; border: 1px solid #F6C9C9; font-size: 12px; font-weight: 700;
+  text-decoration: none; white-space: nowrap; letter-spacing: 0; vertical-align: middle; cursor: help;
+}
+.mp-badge:hover, .mp-badge:focus-visible { background: #FBDCDC; color: #8A1F1F; }
+.mp-dot { width: 18px; height: 18px; border-radius: 50%; background: #F08A8A; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+.mp-badge .hint-tip { font-weight: 500; white-space: normal; }
+.title-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+/* Seção Saldos */
+.bank-block { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+.bank-block:first-of-type { border-top: 0; padding-top: 4px; }
+.bank-head { display: flex; align-items: center; gap: 12px; }
+.bank-head .grow { flex: 1; min-width: 0; }
+.bank-lines { list-style: none; margin: 8px 0 0 48px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.bank-lines li { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.bank-lines li.sub { font-size: 13px; color: var(--text-2); padding-left: 12px; }
+.balance-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.balance-totals div { display: flex; flex-direction: column; gap: 2px; }
+.balance-totals span { font-size: 13px; color: var(--text-2); font-weight: 600; }
+.balance-totals b { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .form-grid input[type='checkbox'] { width: 18px; height: 18px; accent-color: var(--accent); }
 
 .table-wrap { overflow-x: auto; }
@@ -281,3 +316,62 @@ tr.row-ignored .amount { text-decoration: line-through; }
   .content { padding: 16px; }
   h1 { font-size: 24px; }
 }
+
+/* ---- Origem: dos bancos × cadastrado por você ---- */
+.src-bank-text { color: var(--src-bank-ink); }
+.src-you-text { color: var(--src-you-ink); }
+.src-bank-fill { background: var(--src-bank); }
+.src-you-fill { background: var(--src-you); }
+.source-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 3px 9px; margin-left: 6px; border-radius: 999px; font-weight: 700; vertical-align: 1px; }
+.source-tag.src-bank { background: var(--src-bank-soft); color: var(--src-bank-ink); }
+.source-tag.src-you { background: var(--src-you-soft); color: var(--src-you-ink); }
+.source-icon { flex: none; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; background: var(--line); color: var(--text-2); }
+.source-icon.src-bank { background: var(--src-bank-soft); color: var(--src-bank-ink); }
+.source-icon.src-you { background: var(--src-you-soft); color: var(--src-you-ink); }
+.source-split { display: flex; gap: 2px; width: 100%; min-width: 120px; }
+.source-split > span { border-radius: 0; min-width: 4px; }
+.source-split > span:first-child { border-radius: 999px 0 0 999px; }
+.source-split > span:last-child { border-radius: 0 999px 999px 0; }
+.source-split > span:only-child { border-radius: 999px; }
+.tile .source-split { margin: 2px 0; }
+.source-bar { display: flex; flex-direction: column; gap: 8px; }
+.source-bar-legend { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.source-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start; }
+.source-panel { border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.source-panel.source-empty { border-style: dashed; background: #FAFAFD; }
+.source-head { display: flex; align-items: center; gap: 10px; }
+.source-head .grow { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.source-head h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--text); display: flex; align-items: center; }
+.source-empty .source-head h3 { color: var(--text-2); }
+.source-head small { font-size: 13px; color: var(--text-2); }
+.source-head > b { font-size: 18px; font-weight: 800; }
+.source-panel .bars { gap: 12px; }
+.source-panel .bars li { grid-template-columns: minmax(0, 1.3fr) minmax(48px, 1fr) auto; gap: 12px; }
+.source-panel .bar-label { font-size: 14px; }
+.bar-label.stacked { flex-direction: column; align-items: flex-start; gap: 0; }
+.bar-label.stacked b, .bar-label.stacked small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.bar-label.stacked small { font-size: 12px; color: var(--muted); font-weight: 500; }
+.source-panel .totals-row { padding-top: 14px; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+.source-panel .totals-row b { font-size: 16px; }
+.source-note { margin: 0; display: flex; gap: 8px; font-size: 13px; color: var(--text-2); line-height: 1.45; }
+.source-note svg { flex: none; margin-top: 1px; }
+.source-sum { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 16px; border-top: 1px dashed var(--border); font-weight: 700; font-variant-numeric: tabular-nums; }
+.source-sum b { font-size: 17px; font-weight: 800; }
+.head-total { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.head-total span { font-size: 13px; color: var(--text-2); font-weight: 600; }
+.head-total b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+/* Grupos de colunas nas tabelas (Histórico e Previsão). */
+.history-table th.group { padding: 8px; font-size: 12px; font-weight: 800; text-align: center; border-radius: 10px 10px 0 0; }
+.history-table th.group span { display: inline-flex; align-items: center; gap: 6px; }
+.history-table .g-bank { background: var(--src-bank-tint); }
+.history-table .g-you { background: var(--src-you-tint); }
+.history-table th.group.g-bank { background: var(--src-bank-soft); color: var(--src-bank-ink); }
+.history-table th.group.g-you { background: var(--src-you-soft); color: var(--src-you-ink); }
+.history-table .g-gap { width: 8px; padding: 0; background: transparent !important; border: 0 !important; }
+.history-table tfoot tr.group-totals td { border-top: 0; font-size: 13px; text-align: center; padding: 8px; }
+.history-table tfoot tr.group-totals td.g-bank { background: var(--src-bank-soft); color: var(--src-bank-ink); border-radius: 0 0 10px 10px; }
+.history-table tfoot tr.group-totals td.g-you { background: var(--src-you-soft); color: var(--src-you-ink); border-radius: 0 0 10px 10px; }
+.installment-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: start; }
+.installment-group-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.installment-group-head h3 { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+.tile-sub b { white-space: nowrap; }
