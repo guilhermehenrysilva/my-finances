@@ -21,11 +21,26 @@ function billStatus(b: Bill, overdue: boolean, auto: string): string {
 }
 const EMPTY = { description: '', amount: '', dueDay: '', matchText: '', repeat: 'monthly' as Repeat, times: '' };
 
+type Edit = { id: number; description: string; amount: string; dueDay: string; matchText: string; applyTo: 'future' | 'month' };
+
+const editFor = (b: Bill): Edit => ({
+  id: b.id,
+  description: b.description,
+  amount: b.amount != null ? b.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false }) : '',
+  dueDay: String(Number(b.due_date.slice(8, 10))),
+  matchText: b.match_text ?? '',
+  applyTo: 'future',
+});
+
 export function BillsPage({ month, version, refresh }: PageProps) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [form, setForm] = useState(EMPTY);
+  const [edit, setEdit] = useState<Edit | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Trocar de mês fecha a edição aberta.
+  useEffect(() => setEdit(null), [month]);
 
   useEffect(() => {
     api.get<Bill[]>(`/bills?month=${month}`).then(setBills, (e: Error) => setError(e.message));
@@ -58,6 +73,21 @@ export function BillsPage({ month, version, refresh }: PageProps) {
         times: form.repeat === 'times' ? Number(form.times) : undefined,
       });
       setForm(EMPTY);
+    });
+  }
+
+  function saveEdit(e: FormEvent) {
+    e.preventDefault();
+    if (!edit) return;
+    run(async () => {
+      await api.put(`/bills/${edit.id}`, {
+        description: edit.description,
+        amount: edit.amount === '' ? null : parseMoney(edit.amount),
+        dueDay: edit.dueDay,
+        matchText: edit.matchText,
+        applyTo: edit.applyTo,
+      });
+      setEdit(null);
     });
   }
 
@@ -95,6 +125,40 @@ export function BillsPage({ month, version, refresh }: PageProps) {
               const overdue = !b.paid_at && b.due_date < todayStr();
               const auto = b.card_account_id ? ' · baixa automática pelo pagamento da fatura'
                 : b.match_text ? ` · baixa automática ao achar “${b.match_text}”` : '';
+              if (edit?.id === b.id) {
+                return (
+                  <li key={b.id} className="editing">
+                    <form className="form-grid" onSubmit={saveEdit} aria-label={`Editar ${b.description}`}>
+                      <label>Descrição<input required autoFocus value={edit.description} onChange={(e) => setEdit({ ...edit, description: e.target.value })} /></label>
+                      <label>Valor<input inputMode="decimal" value={edit.amount} onChange={(e) => setEdit({ ...edit, amount: e.target.value })} placeholder="79,90" /></label>
+                      <label>Dia do vencimento<input required type="number" min={1} max={31} value={edit.dueDay} onChange={(e) => setEdit({ ...edit, dueDay: e.target.value })} /></label>
+                      <label>
+                        <span className="label-row">
+                          Texto no extrato (opcional)
+                          <Hint text="Se esse texto aparecer numa saída do mês, a conta é marcada como paga sozinha." />
+                        </span>
+                        <input value={edit.matchText} onChange={(e) => setEdit({ ...edit, matchText: e.target.value })} />
+                      </label>
+                      {b.template_id != null && (
+                        <label>
+                          <span className="label-row">
+                            Aplicar a
+                            <Hint text="Os meses anteriores e as contas já pagas não mudam." />
+                          </span>
+                          <select value={edit.applyTo} onChange={(e) => setEdit({ ...edit, applyTo: e.target.value as Edit['applyTo'] })}>
+                            <option value="future">Este mês e os próximos</option>
+                            <option value="month">Só este mês</option>
+                          </select>
+                        </label>
+                      )}
+                      <div className="form-actions">
+                        <button className="btn" type="submit">Salvar</button>
+                        <button className="btn btn-ghost" type="button" onClick={() => setEdit(null)}>Cancelar</button>
+                      </div>
+                    </form>
+                  </li>
+                );
+              }
               return (
                 <li key={b.id} className={b.paid_at ? 'done' : ''}>
                   <label>
@@ -118,6 +182,9 @@ export function BillsPage({ month, version, refresh }: PageProps) {
                     </span>
                   </label>
                   <span className="num">{b.amount != null ? money(b.amount) : '—'}</span>
+                  {b.card_account_id
+                    ? <span aria-hidden="true" />
+                    : <button className="icon-btn" aria-label={`Editar ${b.description}`} onClick={() => setEdit(editFor(b))}><Icon name="pencil" size={18} /></button>}
                   <button className="icon-btn" aria-label={`Remover ${b.description}`} onClick={() => remove(b)}><Icon name="close" size={18} /></button>
                 </li>
               );

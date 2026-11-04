@@ -2,7 +2,8 @@
 import { db } from './db.ts';
 import { addMonths, today } from './classify.ts';
 
-function dueDate(month: string, day: number): string {
+/** Data de vencimento no mês; dia 31 vira o último dia nos meses mais curtos. */
+export function dueDate(month: string, day: number): string {
   const [y, m] = month.split('-').map(Number);
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
   return `${month}-${String(Math.min(day, last)).padStart(2, '0')}`;

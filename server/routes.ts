@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { db, getSetting, setSetting, transaction } from './db.ts';
 import { pluggyConfigured } from './pluggy.ts';
 import { runSync, reclassifyAll, syncState } from './sync.ts';
-import { ensureMonthBills, matchBills } from './bills.ts';
+import { dueDate, ensureMonthBills, matchBills } from './bills.ts';
 import { BackupError, exportBackup, importBackup } from './backup.ts';
 import { dismissSuggestion, findSuggestions } from './recurring.ts';
 import { forecast } from './forecast.ts';
@@ -463,9 +463,8 @@ api.post('/bills', async (c) => {
       .run(description, amount, dueDay, matchText, m, endMonth);
     ensureMonthBills(m);
   } else {
-    const last = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 0)).getUTCDate();
     db.prepare('INSERT INTO bills (month, description, amount, due_date, match_text) VALUES (?, ?, ?, ?, ?)')
-      .run(m, description, amount, `${m}-${String(Math.min(dueDay, last)).padStart(2, '0')}`, matchText);
+      .run(m, description, amount, dueDate(m, dueDay), matchText);
   }
   matchBills();
   return c.json({ ok: true }, 201);
@@ -480,6 +479,40 @@ api.patch('/bills/:id', async (c) => {
       .run(body.paid ? today() : null, body.paid ? 1 : 0, body.paid ? 1 : 0, id);
   }
   if ('amount' in body) db.prepare('UPDATE bills SET amount = ? WHERE id = ?').run(money(body.amount, 'amount', false), id);
+  return c.json({ ok: true });
+});
+
+/**
+ * Edita descrição, valor, dia do vencimento e texto do extrato de uma conta.
+ * Numa conta que se repete, applyTo='future' também muda a recorrente e as contas em aberto dos meses seguintes;
+ * sem isso, só este mês muda. Faturas de cartão vêm do banco e não são editáveis.
+ */
+api.put('/bills/:id', async (c) => {
+  const body = await c.req.json<Record<string, unknown>>();
+  const id = Number(c.req.param('id'));
+  const bill = db.prepare('SELECT template_id, month, card_account_id FROM bills WHERE id = ?').get(id) as {
+    template_id: number | null; month: string; card_account_id: string | null;
+  } | undefined;
+  if (!bill) return c.json({ error: 'Conta não encontrada' }, 404);
+  if (bill.card_account_id) throw new BadRequest('Faturas de cartão vêm do banco e não podem ser editadas');
+  const description = text(body.description, 'description');
+  const amount = money(body.amount, 'amount', false);
+  const dueDay = day(body.dueDay, 'dueDay');
+  const matchText = text(body.matchText, 'matchText', false);
+
+  const update = db.prepare('UPDATE bills SET description = ?, amount = ?, due_date = ?, match_text = ? WHERE id = ?');
+  transaction(() => {
+    update.run(description, amount, dueDate(bill.month, dueDay), matchText, id);
+    if (bill.template_id && body.applyTo === 'future') {
+      db.prepare('UPDATE bill_templates SET description = ?, amount = ?, due_day = ?, match_text = ? WHERE id = ?')
+        .run(description, amount, dueDay, matchText, bill.template_id);
+      // Meses seguintes já abertos: as contas em aberto acompanham; as já pagas ficam como foram pagas.
+      const later = db.prepare('SELECT id, month FROM bills WHERE template_id = ? AND month > ? AND paid_at IS NULL')
+        .all(bill.template_id, bill.month) as { id: number; month: string }[];
+      for (const b of later) update.run(description, amount, dueDate(b.month, dueDay), matchText, b.id);
+    }
+  });
+  matchBills();
   return c.json({ ok: true });
 });
 
