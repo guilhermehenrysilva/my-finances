@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Previsão no celular</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#7EE8B4}a:hover{color:#A5F0CB}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; background: #0E1110; color: #E6EBE8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.4; display: flex; flex-direction: column">
+  <header style="padding: 20px 16px 8px; display: flex; flex-direction: column; gap: 2px">
+    <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.03em">Previsão</h1>
+    <span style="font-size: 13px; color: #9AA5A0; font-weight: 600">O que já está certo nos próximos meses</span>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 8px 16px 12px; display: flex; flex-direction: column; gap: 10px">
+    <div aria-hidden="true" style="display: flex; gap: 14px; font-size: 12px; color: #9AA5A0; font-weight: 600">
+      <span style="display: flex; align-items: center; gap: 6px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #A78BFA; display: block"></i>Parcelas</span>
+      <span style="display: flex; align-items: center; gap: 6px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #F27AB6; display: block"></i>Contas fixas</span>
+      <span style="display: flex; align-items: center; gap: 6px"><i style="width: 10px; height: 10px; border-radius: 3px; background: #23503F; display: block"></i>Sobra</span>
+    </div>
+
+    <sc-for list="{{months}}" as="m" hint-placeholder-count="4">
+      <section style="background: #161A19; border-radius: 20px; overflow: hidden">
+        <button type="button" aria-expanded="{{m.expanded}}" onClick="{{m.pick}}" style="width: 100%; border: 0; background: transparent; color: #E6EBE8; font: inherit; text-align: left; padding: 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 8px">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+            <b style="font-size: 16px">{{m.name}}</b>
+            <span style="font-size: 13px; color: #9AA5A0; font-weight: 600">sobram <b style="color: {{accent}}; font-variant-numeric: tabular-nums">{{m.left}}</b></span>
+          </span>
+          <span style="display: flex; gap: 2px; height: 10px; width: 100%">
+            <span style="flex: {{m.pPart}}; background: #A78BFA; border-radius: 5px 0 0 5px; min-width: 4px"></span>
+            <span style="flex: {{m.cPart}}; background: #F27AB6"></span>
+            <span style="flex: {{m.sPart}}; background: #23503F; border-radius: 0 5px 5px 0"></span>
+          </span>
+          <span style="font-size: 13px; color: #9AA5A0">Comprometido <b style="color: #E6EBE8; font-variant-numeric: tabular-nums">{{m.committed}}</b> de {{m.income}}</span>
+          <sc-if value="{{m.news}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 700; color: #7EE8B4; background: #16302A; border-radius: 999px; padding: 3px 10px; align-self: flex-start">{{m.news}}</span></sc-if>
+        </button>
+        <sc-if value="{{m.open}}" hint-placeholder-val="{{false}}">
+          <ul style="list-style: none; margin: 0; padding: 0 16px 8px; border-top: 1px solid #222826">
+            <sc-for list="{{m.lines}}" as="l" hint-placeholder-count="3">
+              <li style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #222826; font-size: 14px">
+                <i style="width: 8px; height: 8px; border-radius: 50%; background: {{l.dot}}; display: block; flex: none"></i>
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><b>{{l.name}}</b><small style="font-size: 12px; color: #9AA5A0">{{l.sub}}</small></span>
+                <b style="font-variant-numeric: tabular-nums">{{l.money}}</b>
+              </li>
+            </sc-for>
+          </ul>
+        </sc-if>
+      </section>
+    </sc-for>
+  </main>
+
+  <nav aria-label="Navegação principal" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: #161A19; border-top: 1px solid #272D2B; padding: 6px 4px 22px">
+    <a href="Mobile-Inicio.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Início</a>
+    <a href="Mobile-Contas.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Contas</a>
+    <a href="Mobile-Lancamentos.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>Lançamentos</a>
+    <a href="Mobile-Previsao.dc.html" aria-current="page" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: {{accent}}; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>Previsão</a>
+    <a href="Mobile-Mais.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>Mais</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DD68C","options":["#3DD68C","#2EBD7A","#5EE0A0","#4ADE80"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 0 };
+  }
+  renderVals() {
+    var self = this;
+    var brl = function (v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+    var income = 9500;
+    var fixed = 1489.01;
+    var data = [
+      { name: 'Dezembro', parcels: [['Notebook Dell', '3 de 10', 250], ['Fone JBL', '3 de 3 · última', 89]] },
+      { name: 'Janeiro de 2027', parcels: [['Notebook Dell', '4 de 10', 250]], news: 'Fone acabou: R$ 89,00 a mais' },
+      { name: 'Fevereiro de 2027', parcels: [['Notebook Dell', '5 de 10', 250]] },
+      { name: 'Março de 2027', parcels: [['Notebook Dell', '6 de 10', 250]] }
+    ];
+    var months = data.map(function (d, i) {
+      var p = d.parcels.reduce(function (s, x) { return s + x[2]; }, 0);
+      var committed = p + fixed;
+      var lines = d.parcels.map(function (x) {
+        return { name: x[0], sub: 'Parcela ' + x[1], money: brl(x[2]), dot: '#A78BFA' };
+      });
+      lines.push({ name: 'Contas fixas', sub: '6 contas · aluguel, internet e mais', money: brl(fixed), dot: '#F27AB6' });
+      var open = self.state.open === i;
+      return {
+        name: d.name,
+        news: d.news || '',
+        open: open,
+        expanded: open ? 'true' : 'false',
+        pick: function () { self.setState({ open: self.state.open === i ? -1 : i }); },
+        left: brl(income - committed),
+        committed: brl(committed),
+        income: brl(income),
+        pPart: Math.round(p),
+        cPart: Math.round(fixed),
+        sPart: Math.round(income - committed),
+        lines: lines
+      };
+    });
+    return { accent: this.props.accent ?? '#3DD68C', months: months };
+  }
+}
+</script>
+</body>
+</html>

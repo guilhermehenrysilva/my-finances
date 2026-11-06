@@ -1,14 +1,14 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { api, type Bill, type Suggestion } from '../api.ts';
-import { money, monthName, parseMoney, shortDate, todayStr } from '../format.ts';
+import { dueLabel, money, monthName, parseMoney, shortDate, todayStr } from '../format.ts';
 import { Hint, Icon, SourceTag } from '../icons.tsx';
 import type { PageProps } from '../App.tsx';
 
 type Repeat = 'once' | 'monthly' | 'times';
 
 /** Linha de status: em aberto, paga à mão ou paga com o lançamento do banco identificado. */
-function billStatus(b: Bill, overdue: boolean, auto: string): string {
-  if (!b.paid_at) return `${overdue ? 'Venceu' : 'Vence'} ${shortDate(b.due_date)}${auto}`;
+function billStatus(b: Bill, auto: string): string {
+  if (!b.paid_at) return `${dueLabel(b.due_date)}${auto}`;
   if (b.transaction_id) {
     const where = b.tx_account ? ` (${b.tx_account_type === 'CREDIT' ? 'cartão' : 'conta'} ${b.tx_account})` : '';
     const found = `Pagamento identificado nos lançamentos em ${shortDate(b.tx_date ?? b.paid_at)}: ${b.tx_description}${where}`;
@@ -108,20 +108,35 @@ export function BillsPage({ month, version, refresh }: PageProps) {
 
   const paid = bills.filter((b) => b.paid_at).length;
   const pendingTotal = bills.filter((b) => !b.paid_at).reduce((s, b) => s + (b.amount ?? 0), 0);
+  // As que faltam pagar primeiro (as vencidas no topo); as pagas descem.
+  const ordered = [...bills].sort((a, b) => Number(!!a.paid_at) - Number(!!b.paid_at) || a.due_date.localeCompare(b.due_date));
+  const formRef = useRef<HTMLFormElement>(null);
+  const openForm = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    formRef.current?.querySelector('input')?.focus({ preventScroll: true });
+  };
 
   return (
     <div className="stack">
       <section className="card">
         <div className="card-head">
-          <h2>Contas do mês</h2>
-          <span className="muted">{paid} de {bills.length} pagas · faltam {money(pendingTotal)}</span>
+          <div>
+            <h2>Contas do mês</h2>
+            {bills.length > 0 && <span className="sub">Faltam {money(pendingTotal)} · {paid} de {bills.length} pagas</span>}
+          </div>
+          <button className="btn btn-icon" onClick={openForm}><Icon name="plus" size={18} stroke={2.4} />Nova conta</button>
         </div>
+        {bills.length > 0 && (
+          <div className="progress" role="img" aria-label={`${Math.round((paid / bills.length) * 100)}% das contas pagas`}>
+            <span style={{ width: `${(paid / bills.length) * 100}%` }} />
+          </div>
+        )}
         {error && <p className="error-text">{error}</p>}
         {bills.length === 0 ? (
           <p className="muted">Nenhuma conta neste mês. Cadastre abaixo, por exemplo internet, condomínio ou IPTU.</p>
         ) : (
           <ul className="checklist">
-            {bills.map((b) => {
+            {ordered.map((b) => {
               const overdue = !b.paid_at && b.due_date < todayStr();
               const auto = b.card_account_id ? ' · baixa automática pelo pagamento da fatura'
                 : b.match_text ? ` · baixa automática ao achar “${b.match_text}”` : '';
@@ -178,14 +193,16 @@ export function BillsPage({ month, version, refresh }: PageProps) {
                           <span className="tag tag-warn" title="Marcada como paga por você, sem lançamento do banco ligado a ela">pago à mão</span>
                         )}
                       </span>
-                      <small className={overdue ? 'error-text' : 'muted'}>{billStatus(b, overdue, auto)}</small>
+                      <small className={overdue ? 'error-text' : 'muted'}>{billStatus(b, auto)}</small>
                     </span>
                   </label>
                   <span className="num">{b.amount != null ? money(b.amount) : '—'}</span>
-                  {b.card_account_id
-                    ? <span aria-hidden="true" />
-                    : <button className="icon-btn" aria-label={`Editar ${b.description}`} onClick={() => setEdit(editFor(b))}><Icon name="pencil" size={18} /></button>}
-                  <button className="icon-btn" aria-label={`Remover ${b.description}`} onClick={() => remove(b)}><Icon name="close" size={18} /></button>
+                  <span className="row-actions">
+                    {!b.card_account_id && (
+                      <button className="icon-btn" aria-label={`Editar ${b.description}`} onClick={() => setEdit(editFor(b))}><Icon name="pencil" size={18} /></button>
+                    )}
+                    <button className="icon-btn" aria-label={`Remover ${b.description}`} onClick={() => remove(b)}><Icon name="close" size={18} /></button>
+                  </span>
                 </li>
               );
             })}
@@ -220,7 +237,7 @@ export function BillsPage({ month, version, refresh }: PageProps) {
 
       <section className="card">
         <h2>Nova conta</h2>
-        <form className="form-grid" onSubmit={submit}>
+        <form ref={formRef} className="form-grid" onSubmit={submit}>
           <label>Descrição<input required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Internet" /></label>
           <label>Valor<input inputMode="decimal" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} placeholder="79,90" /></label>
           <label>Dia do vencimento<input required type="number" min={1} max={31} value={form.dueDay} onChange={(e) => setForm({ ...form, dueDay: e.target.value })} placeholder="10" /></label>

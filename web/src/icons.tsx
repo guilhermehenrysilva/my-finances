@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import type { Method } from './api.ts';
 
 const PATHS = {
+  plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
+  home: <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />,
   dashboard: <><rect x="3" y="3" width="7" height="9" rx="2" /><rect x="14" y="3" width="7" height="5" rx="2" /><rect x="14" y="12" width="7" height="9" rx="2" /><rect x="3" y="16" width="7" height="5" rx="2" /></>,
   list: <><path d="M8 6h13" /><path d="M8 12h13" /><path d="M8 18h13" /><path d="M3 6h.01" /><path d="M3 12h.01" /><path d="M3 18h.01" /></>,
   check: <><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>,
@@ -113,7 +115,8 @@ export function MethodBadge({ method, size = 30 }: { method: Method; size?: numb
   );
 }
 
-const AVATAR_COLORS = ['#8A2BE2', '#1F66C9', '#D03B3B', '#17163A', '#0E8F5E', '#C2410C', '#BE185D'];
+// Médios o bastante para o texto branco ler e para se destacarem no tema escuro e no claro.
+const AVATAR_COLORS = ['#7C4DCC', '#2B6CB0', '#C24141', '#4A5D57', '#1F8A5B', '#C2410C', '#BE185D'];
 
 /** Avatar com as iniciais do banco; a cor é fixa por nome. */
 export function BankAvatar({ label }: { label: string }) {

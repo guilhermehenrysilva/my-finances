@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Lançamentos no celular</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#7EE8B4}a:hover{color:#A5F0CB}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; background: #0E1110; color: #E6EBE8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.4; display: flex; flex-direction: column">
+  <header style="padding: 20px 16px 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px">
+    <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.03em">Lançamentos</h1>
+    <span style="display: flex; align-items: center; gap: 2px; padding: 2px; border-radius: 999px; border: 1px solid #272D2B; background: #161A19">
+      <button type="button" aria-label="Mês anterior" style="width: 32px; height: 32px; border: 0; background: transparent; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <span style="font-size: 13px; font-weight: 700">Nov</span>
+      <button type="button" aria-label="Próximo mês" style="width: 32px; height: 32px; border: 0; background: transparent; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </span>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 4px 16px 12px; display: flex; flex-direction: column; gap: 10px">
+    <label style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: #161A19; border: 1px solid #272D2B; color: #9AA5A0">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar</span>
+      <input placeholder="Mercado, Uber, aluguel" style="flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #E6EBE8; font: inherit; font-size: 14px">
+    </label>
+
+    <div role="group" aria-label="Filtrar por meio" style="display: flex; gap: 6px; overflow: hidden">
+      <sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+        <button type="button" aria-pressed="{{c.on}}" onClick="{{c.pick}}" style="flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{c.bd}}; background: {{c.bg}}; color: {{c.fg}}; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{c.label}}</button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #9AA5A0; font-weight: 600">
+      <span>{{count}}</span>
+      <span>Saiu <b style="color: #E6EBE8; font-variant-numeric: tabular-nums">{{total}}</b></span>
+    </div>
+
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+      <section style="display: flex; flex-direction: column">
+        <h2 style="margin: 4px 0 0; font-size: 12px; color: #9AA5A0; font-weight: 700">{{g.label}}</h2>
+        <sc-for list="{{g.items}}" as="r" hint-placeholder-count="2">
+          <a href="Mobile-Lancamento.dc.html" style="min-height: 56px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #E6EBE8; border-bottom: 1px solid #222826">
+            <span style="flex: none; width: 36px; height: 36px; border-radius: 11px; background: {{r.iconBg}}; color: {{r.iconFg}}; display: flex; align-items: center; justify-content: center">
+              <sc-if value="{{r.isCartao}}" hint-placeholder-val="{{true}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg></sc-if>
+              <sc-if value="{{r.isPix}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 9-9 9-9-9z"></path></svg></sc-if>
+              <sc-if value="{{r.isBoleto}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6v12"></path><path d="M8 6v12"></path><path d="M11 6v12"></path><path d="M15 6v12"></path><path d="M18 6v12"></path><path d="M21 6v12"></path></svg></sc-if>
+              <sc-if value="{{r.isDebito}}" hint-placeholder-val="{{false}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"></path><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg></sc-if>
+            </span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+              <b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</b>
+              <small style="font-size: 12px; color: #9AA5A0; display: flex; align-items: center; gap: 6px">{{r.sub}}<sc-if value="{{r.tag}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; padding: 1px 7px; border-radius: 999px; background: #26214A; color: #C4B2FD; font-weight: 700">{{r.tag}}</span></sc-if></small>
+            </span>
+            <b style="font-variant-numeric: tabular-nums; white-space: nowrap">{{r.money}}</b>
+          </a>
+        </sc-for>
+      </section>
+    </sc-for>
+  </main>
+
+  <nav aria-label="Navegação principal" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: #161A19; border-top: 1px solid #272D2B; padding: 6px 4px 22px">
+    <a href="Mobile-Inicio.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Início</a>
+    <a href="Mobile-Contas.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Contas</a>
+    <a href="Mobile-Lancamentos.dc.html" aria-current="page" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: {{accent}}; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>Lançamentos</a>
+    <a href="Mobile-Previsao.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>Previsão</a>
+    <a href="Mobile-Mais.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>Mais</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DD68C","options":["#3DD68C","#2EBD7A","#5EE0A0","#4ADE80"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { method: '' };
+  }
+  renderVals() {
+    var self = this;
+    var method = this.state.method;
+    var brl = function (v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+    var icons = {
+      cartao: ['#26214A', '#C4B2FD'],
+      pix: ['#123430', '#5EE0C8'],
+      boleto: ['#3A2E12', '#F5C451'],
+      debito: ['#15283A', '#6CB4F5']
+    };
+    var days = [
+      { label: 'Hoje · sex, 06 nov', items: [
+        { name: 'Mercado Pão de Açúcar', sub: 'Nubank · cartão', m: 'cartao', v: 212.4 },
+        { name: 'Pix para Ana', sub: 'Itaú', m: 'pix', v: 80 }
+      ] },
+      { label: 'Ontem · qui, 05 nov', items: [
+        { name: 'Energia', sub: 'Itaú · boleto', m: 'boleto', v: 189.12 },
+        { name: 'Uber', sub: 'Nubank · cartão', m: 'cartao', v: 23.9 }
+      ] },
+      { label: 'qua, 04 nov', items: [
+        { name: 'Notebook Dell', sub: 'Nubank', m: 'cartao', v: 250, tag: 'Parcela 2/10' },
+        { name: 'iFood', sub: 'Nubank · cartão', m: 'cartao', v: 48.7 },
+        { name: 'Farmácia', sub: 'Itaú · débito', m: 'debito', v: 62.52 }
+      ] }
+    ];
+    var total = 0;
+    var count = 0;
+    var groups = [];
+    days.forEach(function (d) {
+      var items = d.items.filter(function (r) { return !method || r.m === method; }).map(function (r) {
+        total += r.v;
+        count += 1;
+        return {
+          name: r.name, sub: r.sub, tag: r.tag || '', money: '− ' + brl(r.v),
+          iconBg: icons[r.m][0], iconFg: icons[r.m][1],
+          isCartao: r.m === 'cartao', isPix: r.m === 'pix', isBoleto: r.m === 'boleto', isDebito: r.m === 'debito'
+        };
+      });
+      if (items.length) groups.push({ label: d.label, items: items });
+    });
+    var chips = [['', 'Todos'], ['cartao', 'Cartão'], ['pix', 'Pix'], ['boleto', 'Boleto'], ['debito', 'Débito']].map(function (c) {
+      var on = c[0] === method;
+      return {
+        label: c[1], on: on ? 'true' : 'false',
+        bg: on ? '#E6EBE8' : '#161A19', fg: on ? '#0E1110' : '#E6EBE8', bd: on ? '#E6EBE8' : '#272D2B',
+        pick: function () { self.setState({ method: c[0] }); }
+      };
+    });
+    return {
+      accent: this.props.accent ?? '#3DD68C',
+      chips: chips,
+      groups: groups,
+      count: count === 1 ? '1 lançamento' : count + ' lançamentos',
+      total: brl(total)
+    };
+  }
+}
+</script>
+</body>
+</html>

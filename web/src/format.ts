@@ -54,6 +54,31 @@ export function todayStr(): string {
 /** YYYY-MM-DD -> DD/MM */
 export const shortDate = (date: string) => `${date.slice(8, 10)}/${date.slice(5, 7)}`;
 
+/** Dias de `from` até `to` (YYYY-MM-DD), sem se confundir com fuso e horário de verão. */
+function daysBetween(from: string, to: string): number {
+  const utc = (d: string) => Date.UTC(Number(d.slice(0, 4)), Number(d.slice(5, 7)) - 1, Number(d.slice(8, 10)));
+  return Math.round((utc(to) - utc(from)) / 86_400_000);
+}
+
+/** Vencimento em palavras: "Venceu ontem", "Vence hoje", "Vence em 4 dias", "Vence 20/11". */
+export function dueLabel(due: string, today = todayStr()): string {
+  const d = daysBetween(today, due);
+  if (d < -1) return `Venceu ${shortDate(due)}`;
+  if (d === -1) return 'Venceu ontem';
+  if (d === 0) return 'Vence hoje';
+  if (d === 1) return 'Vence amanhã';
+  if (d <= 7) return `Vence em ${d} dias`;
+  return `Vence ${shortDate(due)}`;
+}
+
+/** Cabeçalho de um dia na lista de lançamentos: "Hoje · sex, 06/11", "Ontem · qui, 05/11", "qua, 04/11". */
+export function dayLabel(date: string, today = todayStr()): string {
+  const weekday = new Date(`${date}T12:00:00`).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+  const label = `${weekday}, ${shortDate(date)}`;
+  const d = daysBetween(date, today);
+  return d === 0 ? `Hoje · ${label}` : d === 1 ? `Ontem · ${label}` : label;
+}
+
 export function relativeTime(iso: string | null): string {
   if (!iso) return 'nunca';
   const mins = Math.round((Date.now() - Date.parse(iso)) / 60000);

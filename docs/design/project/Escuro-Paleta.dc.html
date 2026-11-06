@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Paleta escura</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#7EE8B4}a:hover{color:#A5F0CB}
+</style>
+</helmet>
+<div style="width: 1000px; height: 760px; box-sizing: border-box; padding: 40px; background: #0E1110; color: #E6EBE8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <span style="font-size: 14px; color: #9AA5A0; font-weight: 600">Grafite com um fundo de verde · Plus Jakarta Sans</span>
+    <h1 style="margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.03em">Paleta escura</h1>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Superfícies</h2>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #0E1110; border: 1px solid #272D2B"></span><span style="font-size: 13px"><b>Fundo</b><br><span style="color: #9AA5A0">#0E1110</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #161A19; border: 1px solid #272D2B"></span><span style="font-size: 13px"><b>Cartão</b><br><span style="color: #9AA5A0">#161A19</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #1D2220; border: 1px solid #272D2B"></span><span style="font-size: 13px"><b>Cartão 2 · campos</b><br><span style="color: #9AA5A0">#1D2220</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #272D2B"></span><span style="font-size: 13px"><b>Borda</b><br><span style="color: #9AA5A0">#272D2B</span></span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Verde · cor do app</h2>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}"></span><span style="font-size: 13px"><b>Verde</b><br><span style="color: #9AA5A0">botões, ativo, positivo</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #16302A; border: 1px solid #23503F"></span><span style="font-size: 13px"><b>Verde suave</b><br><span style="color: #9AA5A0">#16302A</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #7EE8B4"></span><span style="font-size: 13px"><b>Verde texto</b><br><span style="color: #9AA5A0">#7EE8B4</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #06140E; border: 1px solid #272D2B"></span><span style="font-size: 13px"><b>Texto no verde</b><br><span style="color: #9AA5A0">#06140E</span></span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Dinheiro</h2>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #6CB4F5"></span><span style="font-size: 13px"><b>Entrada</b><br><span style="color: #9AA5A0">#6CB4F5</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #F2935C"></span><span style="font-size: 13px"><b>Saída</b><br><span style="color: #9AA5A0">#F2935C</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #F27171"></span><span style="font-size: 13px"><b>Negativo · venceu</b><br><span style="color: #9AA5A0">#F27171</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #F5C451"></span><span style="font-size: 13px"><b>Pendente · boleto</b><br><span style="color: #9AA5A0">#F5C451</span></span></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Origem e texto</h2>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #A78BFA"></span><span style="font-size: 13px"><b>Dos bancos</b><br><span style="color: #9AA5A0">#A78BFA</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #F27AB6"></span><span style="font-size: 13px"><b>Cadastrado por você</b><br><span style="color: #9AA5A0">#F27AB6</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #E6EBE8"></span><span style="font-size: 13px"><b>Texto</b><br><span style="color: #9AA5A0">#E6EBE8</span></span></div>
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 44px; height: 44px; border-radius: 12px; background: #9AA5A0"></span><span style="font-size: 13px"><b>Texto 2</b><br><span style="color: #9AA5A0">#9AA5A0</span></span></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px">
+    <div style="background: #161A19; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Botões e campos</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+        <button type="button" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 12px; background: {{accent}}; color: #06140E; font: inherit; font-weight: 700; font-size: 14px">Salvar</button>
+        <button type="button" style="min-height: 44px; padding: 0 18px; border: 1px solid #272D2B; border-radius: 12px; background: transparent; color: #E6EBE8; font: inherit; font-weight: 700; font-size: 14px">Cancelar</button>
+        <button type="button" style="min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: #7EE8B4; font: inherit; font-weight: 700; font-size: 14px">Ver todas</button>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #9AA5A0; font-weight: 600">Valor
+        <input value="R$ 650,00" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #272D2B; background: #1D2220; color: #E6EBE8; font: inherit; font-size: 15px">
+      </label>
+    </div>
+    <div style="background: #161A19; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <h2 style="margin: 0; font-size: 13px; color: #9AA5A0; font-weight: 700">Etiquetas e números</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px">
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #26214A; color: #C4B2FD; font-weight: 700">Parcela 2/10</span>
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #3A2E12; color: #F5C451; font-weight: 700">Pendente</span>
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #3A1C1C; color: #F7A0A0; font-weight: 700">Venceu</span>
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #16302A; color: #7EE8B4; font-weight: 700">Paga</span>
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #3A1A2C; color: #F7A3CC; font-weight: 700">Você</span>
+      </div>
+      <div style="display: flex; gap: 24px; align-items: baseline; font-variant-numeric: tabular-nums">
+        <span style="font-size: 28px; font-weight: 800; color: {{accent}}">+ R$ 7.664,96</span>
+        <span style="font-size: 20px; font-weight: 800; color: #F27171">− R$ 312,40</span>
+      </div>
+      <span style="font-size: 13px; color: #9AA5A0">Números sempre com dígitos de largura fixa, para as colunas alinharem</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DD68C","options":["#3DD68C","#2EBD7A","#5EE0A0","#4ADE80"]},"$preview":{"width":1000,"height":760}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#3DD68C' };
+  }
+}
+</script>
+</body>
+</html>
