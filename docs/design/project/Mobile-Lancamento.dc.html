@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Lançamento aberto no celular</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#7EE8B4}a:hover{color:#A5F0CB}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; position: relative; background: #0E1110; color: #E6EBE8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.4">
+  <div aria-hidden="true" style="padding: 20px 16px; display: flex; flex-direction: column; gap: 10px">
+    <span style="font-size: 26px; font-weight: 800; letter-spacing: -0.03em">Lançamentos</span>
+    <span style="height: 44px; border-radius: 999px; background: #161A19"></span>
+    <span style="height: 56px; border-radius: 12px; background: #161A19"></span>
+    <span style="height: 56px; border-radius: 12px; background: #161A19"></span>
+    <span style="height: 56px; border-radius: 12px; background: #161A19"></span>
+  </div>
+  <a href="Mobile-Lancamentos.dc.html" aria-label="Fechar e voltar aos lançamentos" style="position: absolute; inset: 0; background: rgba(0, 0, 0, 0.62)"></a>
+
+  <section role="dialog" aria-labelledby="lanc-titulo" style="position: absolute; left: 0; right: 0; bottom: 0; background: #161A19; border-radius: 26px 26px 0 0; border-top: 1px solid #272D2B; padding: 8px 20px 28px; display: flex; flex-direction: column; gap: 16px">
+    <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #3A423F"></span>
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="flex: none; width: 44px; height: 44px; border-radius: 13px; background: #26214A; color: #C4B2FD; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg></span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+        <h2 id="lanc-titulo" style="margin: 0; font-size: 18px; font-weight: 800">Notebook Dell</h2>
+        <span style="font-size: 13px; color: #9AA5A0">qua, 04 nov · Nubank · cartão</span>
+      </span>
+      <a href="Mobile-Lancamentos.dc.html" aria-label="Fechar" style="flex: none; width: 44px; height: 44px; border-radius: 12px; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></a>
+    </div>
+
+    <b style="font-size: 32px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: {{amountColor}}; text-decoration: {{amountDeco}}">− R$ 250,00</b>
+
+    <div style="background: #1D2220; border-radius: 16px; padding: 4px 14px">
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 14px"><span style="color: #9AA5A0">Parcela</span><b>2 de 10 · faltam R$ 2.000,00</b></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 14px; border-top: 1px solid #272D2B"><span style="color: #9AA5A0">Entra na fatura de</span><b>novembro</b></div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 14px; border-top: 1px solid #272D2B"><span style="color: #9AA5A0">Última parcela</span><b>julho de 2027</b></div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <span style="flex: 1; display: flex; flex-direction: column">
+        <b id="conta-mes">Conta como gasto do mês</b>
+        <small style="font-size: 13px; color: #9AA5A0">{{switchHint}}</small>
+      </span>
+      <button type="button" role="switch" aria-checked="{{countsAria}}" aria-labelledby="conta-mes" onClick="{{toggle}}" style="flex: none; width: 52px; height: 32px; border-radius: 999px; border: 0; padding: 3px; background: {{trackBg}}; cursor: pointer; display: flex; justify-content: {{knobSide}}"><span style="width: 26px; height: 26px; border-radius: 50%; background: {{knobBg}}"></span></button>
+    </div>
+
+    <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #9AA5A0; font-weight: 600">Observação
+      <input placeholder="Para o trabalho" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #272D2B; background: #1D2220; color: #E6EBE8; font: inherit; font-size: 15px">
+    </label>
+
+    <a href="Mobile-Lancamentos.dc.html" style="min-height: 48px; border-radius: 14px; background: {{accent}}; color: #06140E; font-weight: 800; text-decoration: none; display: flex; align-items: center; justify-content: center">Salvar</a>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DD68C","options":["#3DD68C","#2EBD7A","#5EE0A0","#4ADE80"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { counts: true };
+  }
+  renderVals() {
+    var self = this;
+    var accent = this.props.accent ?? '#3DD68C';
+    var on = this.state.counts;
+    return {
+      accent: accent,
+      countsAria: on ? 'true' : 'false',
+      toggle: function () { self.setState({ counts: !self.state.counts }); },
+      trackBg: on ? accent : '#3A423F',
+      knobBg: on ? '#06140E' : '#9AA5A0',
+      knobSide: on ? 'flex-end' : 'flex-start',
+      amountColor: on ? '#E6EBE8' : '#9AA5A0',
+      amountDeco: on ? 'none' : 'line-through',
+      switchHint: on ? 'Desligue para transferências entre suas contas' : 'Não entra nas saídas de novembro'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -57,6 +57,77 @@
       "w": 1440,
       "x": 4560,
       "y": 2100
+    },
+    "Escuro-Dashboard.dc.html": {
+      "expand": "fill",
+      "h": 1560,
+      "page": "page-escuro",
+      "title": "Web · Dashboard escuro",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Escuro-Paleta.dc.html": {
+      "h": 760,
+      "page": "page-escuro",
+      "title": "Paleta escura",
+      "w": 1000,
+      "x": 1520,
+      "y": 0
+    },
+    "Mobile-Inicio.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Início",
+      "w": 390,
+      "x": 0,
+      "y": 1940
+    },
+    "Mobile-Contas.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Contas a pagar",
+      "w": 390,
+      "x": 470,
+      "y": 1940
+    },
+    "Mobile-Lancamentos.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Lançamentos",
+      "w": 390,
+      "x": 940,
+      "y": 1940
+    },
+    "Mobile-Lancamento.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Lançamento aberto",
+      "w": 390,
+      "x": 1410,
+      "y": 1940
+    },
+    "Mobile-Previsao.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Previsão",
+      "w": 390,
+      "x": 1880,
+      "y": 1940
+    },
+    "Mobile-Mais.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "page-escuro",
+      "title": "Celular · Mais",
+      "w": 390,
+      "x": 2350,
+      "y": 1940
     }
   },
   "createdOnFiles": {
@@ -65,9 +136,26 @@
   },
   "designSystems": [],
   "launch": {
-    "view": "canvas"
+    "view": "canvas",
+    "page": "page-escuro"
   },
   "notes": {
+    "escuro-web-titulo": {
+      "x": 0,
+      "y": -300,
+      "text": "Tema escuro · web",
+      "kind": "title1",
+      "maxW": 2520,
+      "page": "page-escuro"
+    },
+    "escuro-celular-titulo": {
+      "x": 0,
+      "y": 1680,
+      "text": "Celular · toque nas abas para navegar",
+      "kind": "title1",
+      "maxW": 2740,
+      "page": "page-escuro"
+    },
     "fontes-titulo": {
       "x": 0,
       "y": 1800,
@@ -83,7 +171,15 @@
     "Fontes-Dashboard.dc.html",
     "Fontes-SemPluggy.dc.html",
     "Fontes-Historico.dc.html",
-    "Fontes-Previsao.dc.html"
+    "Fontes-Previsao.dc.html",
+    "Escuro-Dashboard.dc.html",
+    "Escuro-Paleta.dc.html",
+    "Mobile-Inicio.dc.html",
+    "Mobile-Contas.dc.html",
+    "Mobile-Lancamentos.dc.html",
+    "Mobile-Lancamento.dc.html",
+    "Mobile-Previsao.dc.html",
+    "Mobile-Mais.dc.html"
   ],
   "pages": [
     {
@@ -93,6 +189,10 @@
     {
       "id": "page-uo78a2",
       "name": "Page 2"
+    },
+    {
+      "id": "page-escuro",
+      "name": "Escuro · celular e web"
     }
   ],
   "title": "Financeiro — novo visual"

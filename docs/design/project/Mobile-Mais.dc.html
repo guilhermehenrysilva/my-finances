@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Financeiro — Mais opções no celular</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#7EE8B4}a:hover{color:#A5F0CB}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; background: #0E1110; color: #E6EBE8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 15px; line-height: 1.4; display: flex; flex-direction: column">
+  <header style="padding: 20px 16px 8px">
+    <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.03em">Mais</h1>
+  </header>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 8px 16px 12px; display: flex; flex-direction: column; gap: 12px">
+    <section aria-label="Sua conta" style="background: #161A19; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+      <span style="flex: none; width: 44px; height: 44px; border-radius: 50%; background: #16302A; color: #7EE8B4; display: flex; align-items: center; justify-content: center; font-weight: 800">G</span>
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column"><b>Guilherme</b><small style="font-size: 13px; color: #9AA5A0">Entrou com o Google</small></span>
+    </section>
+
+    <section aria-label="Bancos" style="background: #161A19; border-radius: 20px; padding: 14px 16px; display: flex; align-items: center; gap: 12px">
+      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+        <b style="display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{accent}}"></span>2 bancos conectados</b>
+        <small style="font-size: 13px; color: #9AA5A0">Atualizados há 4 h</small>
+      </span>
+      <button type="button" style="min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid #272D2B; background: transparent; color: #E6EBE8; font: inherit; font-size: 13px; font-weight: 700">Atualizar</button>
+    </section>
+
+    <nav aria-label="Outras telas" style="background: #161A19; border-radius: 20px; padding: 0 16px; display: flex; flex-direction: column">
+      <a href="#" style="min-height: 56px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #E6EBE8">
+        <span style="flex: none; width: 34px; height: 34px; border-radius: 10px; background: #15283A; color: #6CB4F5; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column"><b>Entradas</b><small style="font-size: 12px; color: #9AA5A0">Novembro: R$ 9.500,00 informado</small></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a href="#" style="min-height: 56px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #E6EBE8; border-top: 1px solid #222826">
+        <span style="flex: none; width: 34px; height: 34px; border-radius: 10px; background: #1D2220; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4"></path><path d="M8 2v4"></path><path d="M3 10h18"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column"><b>Histórico</b><small style="font-size: 12px; color: #9AA5A0">Mês a mês, ano a ano</small></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a href="#" style="min-height: 56px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #E6EBE8; border-top: 1px solid #222826">
+        <span style="flex: none; width: 34px; height: 34px; border-radius: 10px; background: #1D2220; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"></path><path d="M5 21V10"></path><path d="M19 21V10"></path><path d="M9.5 21V10"></path><path d="M14.5 21V10"></path><path d="M2 10l10-6 10 6"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column"><b>Bancos e Meu Pluggy</b><small style="font-size: 12px; color: #9AA5A0">Conectar, renomear, remover</small></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+      <a href="#" style="min-height: 56px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #E6EBE8; border-top: 1px solid #222826">
+        <span style="flex: none; width: 34px; height: 34px; border-radius: 10px; background: #1D2220; color: #9AA5A0; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="m4.9 4.9 2.1 2.1"></path><path d="m17 17 2.1 2.1"></path><path d="M2 12h3"></path><path d="M19 12h3"></path><path d="m4.9 19.1 2.1-2.1"></path><path d="m17 7 2.1-2.1"></path></svg></span>
+        <span style="flex: 1; display: flex; flex-direction: column"><b>Configurações</b><small style="font-size: 12px; color: #9AA5A0">Regras, exportar meus dados</small></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA5A0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+      </a>
+    </nav>
+
+    <section aria-labelledby="tema-titulo" style="background: #161A19; border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+      <b id="tema-titulo">Aparência</b>
+      <div role="group" aria-labelledby="tema-titulo" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #0E1110">
+        <sc-for list="{{themes}}" as="t" hint-placeholder-count="3">
+          <button type="button" aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="min-height: 40px; border: 0; border-radius: 9px; background: {{t.bg}}; color: {{t.fg}}; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{t.label}}</button>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Instalar o app" style="border: 1px dashed #23503F; border-radius: 20px; padding: 12px 16px; display: flex; align-items: center; gap: 12px">
+      <span style="flex: 1; font-size: 13px; color: #9AA5A0"><b style="color: #E6EBE8">Use como app.</b> Adicione o Financeiro à tela inicial e abra sem o navegador.</span>
+      <button type="button" style="flex: none; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: #16302A; color: #7EE8B4; font: inherit; font-size: 13px; font-weight: 700">Instalar</button>
+    </section>
+
+    <button type="button" style="min-height: 44px; border: 0; background: transparent; color: #F27171; font: inherit; font-weight: 700; font-size: 14px">Sair</button>
+  </main>
+
+  <nav aria-label="Navegação principal" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); background: #161A19; border-top: 1px solid #272D2B; padding: 6px 4px 22px">
+    <a href="Mobile-Inicio.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Início</a>
+    <a href="Mobile-Contas.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Contas</a>
+    <a href="Mobile-Lancamentos.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>Lançamentos</a>
+    <a href="Mobile-Previsao.dc.html" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: #9AA5A0; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5z"></path><path d="m2 17 10 5 10-5"></path><path d="m2 12 10 5 10-5"></path></svg>Previsão</a>
+    <a href="Mobile-Mais.dc.html" aria-current="page" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; text-decoration: none; color: {{accent}}; font-size: 11px; font-weight: 700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>Mais</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3DD68C","options":["#3DD68C","#2EBD7A","#5EE0A0","#4ADE80"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { theme: 'auto' };
+  }
+  renderVals() {
+    var self = this;
+    var themes = [['escuro', 'Escuro'], ['claro', 'Claro'], ['auto', 'Automático']].map(function (t) {
+      var on = self.state.theme === t[0];
+      return {
+        label: t[1], on: on ? 'true' : 'false',
+        bg: on ? '#1D2220' : 'transparent', fg: on ? '#E6EBE8' : '#9AA5A0',
+        pick: function () { self.setState({ theme: t[0] }); }
+      };
+    });
+    return { accent: this.props.accent ?? '#3DD68C', themes: themes };
+  }
+}
+</script>
+</body>
+</html>
