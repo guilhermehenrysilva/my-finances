@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, type Forecast } from '../api.ts';
 import { currentMonth, money, shortMonthLabel } from '../format.ts';
 import { Hint, Icon, MethodBadge, SourceIcon } from '../icons.tsx';
+import { useIsMobile } from '../useMedia.ts';
 import type { PageProps } from '../App.tsx';
 
 const HORIZONS = [3, 6, 12] as const;
@@ -11,6 +12,7 @@ export function ForecastPage({ version, pluggy }: PageProps) {
   const [withVariable, setWithVariable] = useState(true);
   const [data, setData] = useState<Forecast | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const mobile = useIsMobile();
 
   useEffect(() => {
     api.get<Forecast>(`/forecast?months=${months}&variable=${withVariable}`).then(setData, (e: Error) => setError(e.message));
@@ -86,6 +88,38 @@ export function ForecastPage({ version, pluggy }: PageProps) {
             </div>
           </div>
         </div>
+        {mobile ? (
+          // No celular, um cartão por mês no lugar da tabela larga.
+          <ul className="month-cards">
+            {data.months.map((m) => {
+              const rest = Math.max(m.income - m.committed - m.variable, 0);
+              return (
+                <li key={m.month} className={`month-card${m.month === thisMonth ? ' current' : ''}`}>
+                  <div className="month-card-head">
+                    <b>{shortMonthLabel(m.month)}{m.month === thisMonth && <span className="tag tag-accent">este mês</span>}</b>
+                    <small>sobra <b className={m.result >= 0 ? 'good-text' : 'error-text'}>{money(m.result)}</b></small>
+                  </div>
+                  {m.income > 0 && (
+                    <span className="stack-bar" role="img"
+                      aria-label={`Parcelas ${money(m.installments)}, contas ${money(m.fixed)}${variable ? `, dia a dia ${money(m.variable)}` : ''}, sobra ${money(m.result)}`}>
+                      {m.installments > 0 && <span style={{ flex: m.installments, background: 'var(--src-bank)' }} />}
+                      {m.fixed > 0 && <span style={{ flex: m.fixed, background: 'var(--src-you)' }} />}
+                      {variable && m.variable > 0 && <span style={{ flex: m.variable, background: 'var(--expense)' }} />}
+                      {rest > 0 && <span className="rest" style={{ flex: rest }} />}
+                    </span>
+                  )}
+                  <dl className="mini-dl">
+                    <div><dt>Entradas</dt><dd>{money(m.income)}</dd></div>
+                    <div><dt>Comprometido</dt><dd>{money(m.committed)}</dd></div>
+                    <div><dt>Parcelas</dt><dd>{orDash(m.installments)}</dd></div>
+                    <div><dt>Contas a pagar</dt><dd>{orDash(m.fixed)}</dd></div>
+                    {variable && <div><dt>Dia a dia (média)</dt><dd>{orDash(m.variable)}</dd></div>}
+                  </dl>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
         <div className="table-wrap">
           <table className="history-table" style={{ minWidth: banks ? 980 : 720 }}>
             <thead>
@@ -146,6 +180,7 @@ export function ForecastPage({ version, pluggy }: PageProps) {
             </tbody>
           </table>
         </div>
+        )}
         <p className="muted" style={{ margin: 0, fontSize: 13 }}>
           Entradas: as do mês, se já informadas; senão, as mensais do último mês. Contas a pagar: as já cadastradas no mês (avulsas e mensais) e, nos meses à frente, as mensais (sem as faturas de cartão, que já entram como parcelas).
           Parcelamentos aparecem a partir da primeira parcela na fatura.

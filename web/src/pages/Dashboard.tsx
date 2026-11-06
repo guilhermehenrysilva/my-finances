@@ -1,16 +1,30 @@
 import { useEffect, useState } from 'react';
 import { api, INVESTMENT_LABELS, type Dashboard, type Forecast, type ForecastMonth, type YearSummary } from '../api.ts';
-import { money, shortDate, shortMonthLabel, todayStr } from '../format.ts';
+import { dueLabel, money, shortDate, shortMonthLabel, todayStr } from '../format.ts';
 import { BankAvatar, Icon, PluggyBadge } from '../icons.tsx';
 import { SourceSplit, SpendBySource } from '../SpendBySource.tsx';
 import { YearChart } from '../YearChart.tsx';
 import type { PageProps } from '../App.tsx';
 
-export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
+export function DashboardPage({ month, version, refresh, navigate, pluggy }: PageProps) {
   const [data, setData] = useState<Dashboard | null>(null);
   const [year, setYear] = useState(month.slice(0, 4));
   const [yearData, setYearData] = useState<YearSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [paying, setPaying] = useState<number | null>(null);
+
+  // Marcar como paga direto daqui, sem abrir Contas a pagar.
+  async function markPaid(id: number) {
+    setPaying(id);
+    try {
+      await api.patch(`/bills/${id}`, { paid: true });
+      refresh();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setPaying(null);
+    }
+  }
 
   useEffect(() => {
     api.get<Dashboard>(`/dashboard?month=${month}`).then(setData, (e: Error) => setError(e.message));
@@ -41,6 +55,16 @@ export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
   return (
     <div className="stack">
       <section className="tiles" aria-label="Resumo do mês">
+        <div className={`tile tile-hero ${positive ? 'tile-good' : 'tile-bad'}`}>
+          <span className="tile-icon"><Icon name={positive ? 'trend' : 'trendDown'} stroke={2.2} /></span>
+          <div>
+            <span className="tile-label">Resultado do mês</span>
+            <span className="tile-value">{positive ? '+ ' : ''}{money(data.result)}</span>
+            <span className="tile-sub">
+              {!positive ? 'Saiu mais do que entrou' : keptPct !== null ? `Sobrou ${keptPct}% do que entrou` : 'Entradas − todas as saídas'}
+            </span>
+          </div>
+        </div>
         <div className="tile">
           <span className="tile-icon i-income"><Icon name="up" stroke={2.2} /></span>
           <div>
@@ -68,20 +92,8 @@ export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
             )}
           </div>
         </div>
-        <div className={`tile ${positive ? 'tile-good' : 'tile-bad'}`}>
-          <span className="tile-icon"><Icon name={positive ? 'trend' : 'trendDown'} stroke={2.2} /></span>
-          <div>
-            <span className="tile-label">Resultado do mês</span>
-            <span className="tile-value">{positive ? '+ ' : ''}{money(data.result)}</span>
-            <span className="tile-sub">
-              Entradas − todas as saídas
-              {!positive && ' · negativo'}
-              {keptPct !== null && positive && ` · sobrou ${keptPct}% da entrada`}
-            </span>
-          </div>
-        </div>
         {data.hasBanks ? (
-        <div className="tile">
+        <div className="tile tile-wide">
           <span className="tile-icon i-accent"><Icon name="bank" stroke={2.2} /></span>
           <div>
             <span className="tile-label">Saldo em contas</span>
@@ -94,7 +106,7 @@ export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
           </div>
         </div>
         ) : (
-        <div className="tile">
+        <div className="tile tile-wide">
           <span className="tile-icon i-boleto"><Icon name="check" stroke={2.2} /></span>
           <div>
             <span className="tile-label">Falta pagar</span>
@@ -115,6 +127,58 @@ export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
           <button className="link-btn" onClick={() => navigate('previsao')}>Ver previsão</button>
         </section>
       )}
+
+      <div className="row">
+        <div className="col-wide">
+          <section className="card" aria-labelledby="contas-titulo">
+            <div className="card-head">
+              <div>
+                <h2 id="contas-titulo">Para pagar</h2>
+                {data.bills.count > 0 && (
+                  <span className="sub">Faltam {money(data.bills.pendingTotal)} · {data.bills.paidCount} de {data.bills.count} pagas</span>
+                )}
+              </div>
+              {data.bills.count === 0 && <button className="link-btn" onClick={() => navigate('contas')}>Cadastrar contas</button>}
+            </div>
+            {data.bills.count === 0 ? (
+              <p className="muted">Nenhuma conta cadastrada para este mês. Cadastre aluguel, internet, condomínio… e marque aqui quando pagar.</p>
+            ) : (
+              <>
+                <div className="progress" role="img" aria-label={`${paidPct}% das contas pagas`}><span style={{ width: `${paidPct}%` }} /></div>
+                {data.bills.pending.length === 0 ? (
+                  <p className="good-text" style={{ margin: 0, fontWeight: 700 }}>Tudo pago neste mês.</p>
+                ) : (
+                  <ul className="list pay-list">
+                    {data.bills.pending.map((b) => {
+                      const late = b.due_date < today;
+                      return (
+                        <li key={b.id}>
+                          <button type="button" className="check-btn" aria-label={`Marcar ${b.description} como paga`}
+                            disabled={paying !== null} onClick={() => markPaid(b.id)}>
+                            <span className={`check-dot ${late ? 'late' : 'open'}`} />
+                          </button>
+                          <span className="grow">
+                            <b>{b.description}</b>
+                            <small className={late ? 'error-text' : ''}>{dueLabel(b.due_date, today)}</small>
+                          </span>
+                          <span className="num">{b.amount != null ? money(b.amount) : '—'}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                <button className="link-btn" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('contas')}>Ver todas as contas</button>
+              </>
+            )}
+          </section>
+        </div>
+
+        {data.hasBanks && (
+        <div className="col-narrow">
+          <BalancesCard data={data} pluggy={pluggy} navigate={navigate} />
+        </div>
+        )}
+      </div>
 
       {yearData && (
         <section className="card" aria-labelledby="ano-titulo">
@@ -165,115 +229,75 @@ export function DashboardPage({ month, version, navigate, pluggy }: PageProps) {
         </div>
         <SpendBySource data={data} onOpen={navigate} />
       </section>
-
-      <div className="row">
-        <div className="col-wide">
-          <section className="card" aria-labelledby="contas-titulo">
-            <div className="card-head">
-              <h2 id="contas-titulo">Contas a pagar</h2>
-              {data.bills.count > 0
-                ? <span className="muted" style={{ fontWeight: 700 }}>{data.bills.paidCount} de {data.bills.count} pagas</span>
-                : <button className="link-btn" onClick={() => navigate('contas')}>Cadastrar</button>}
-            </div>
-            {data.bills.count === 0 ? (
-              <p className="muted">Nenhuma conta cadastrada para este mês.</p>
-            ) : (
-              <>
-                <div className="progress" role="img" aria-label={`${paidPct}% das contas pagas`}><span style={{ width: `${paidPct}%` }} /></div>
-                {data.bills.pending.length === 0 ? (
-                  <p className="good-text" style={{ margin: 0, fontWeight: 700 }}>Tudo pago neste mês.</p>
-                ) : (
-                  <ul className="list">
-                    {data.bills.pending.map((b) => {
-                      const late = b.due_date < today;
-                      return (
-                        <li key={b.id}>
-                          <span className={`check-dot ${late ? 'late' : 'open'}`} />
-                          <span className="grow">
-                            <b>{b.description}</b>
-                            <small className={late ? 'error-text' : ''}>{late ? 'Venceu' : 'Vence'} {shortDate(b.due_date)}</small>
-                          </span>
-                          <span className="num">{b.amount != null ? money(b.amount) : '—'}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-                <button className="link-btn" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('contas')}>Ver todas</button>
-              </>
-            )}
-          </section>
-
-        </div>
-
-        {data.hasBanks && (
-        <div className="col-narrow">
-          <section className="card" aria-labelledby="saldos-titulo">
-            <div className="card-head">
-              <span className="title-row">
-                <h2 id="saldos-titulo">Saldos</h2>
-                <PluggyBadge {...pluggy} />
-              </span>
-            </div>
-            {data.banks.length === 0 ? (
-              <p className="muted">
-                Nenhum banco sincronizado. <button className="link-btn" onClick={() => navigate('config')}>Conectar bancos</button>
-              </p>
-            ) : (
-              <>
-                <div>
-                  {data.banks.map((bank) => (
-                    <div key={bank.itemId} className="bank-block">
-                      <div className="bank-head">
-                        <BankAvatar label={bank.label} />
-                        <span className="grow"><b>{bank.label}</b></span>
-                        <span className="num" title="Contas + investimentos">{money(bank.bankBalance + bank.investmentsTotal)}</span>
-                      </div>
-                      <ul className="bank-lines">
-                        {bank.accounts.map((a) => (
-                          <li key={a.id}>
-                            <span className="muted">
-                              {a.type === 'CREDIT'
-                                ? `Cartão · fatura aberta${a.available_limit != null ? ` · disponível ${money(a.available_limit)}` : ''}`
-                                : a.name}
-                            </span>
-                            <span className="num">{a.type === 'CREDIT' ? `− ${money(a.balance)}` : money(a.balance)}</span>
-                          </li>
-                        ))}
-                        {bank.investments.length > 0 && (
-                          <li>
-                            <span className="muted">Investimentos ({bank.investments.length})</span>
-                            <span className="num">{money(bank.investmentsTotal)}</span>
-                          </li>
-                        )}
-                        {bank.investments.map((i) => (
-                          <li key={i.id} className="sub">
-                            <span>
-                              {i.name}
-                              {i.type && <span className="tag">{INVESTMENT_LABELS[i.type] ?? i.type}</span>}
-                              {i.due_date && <> · vence {shortDate(i.due_date)}/{i.due_date.slice(2, 4)}</>}
-                            </span>
-                            <span className="num" style={{ fontWeight: 600 }}>{money(i.balance)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-                <div className="balance-totals">
-                  <div><span>Em contas</span><b>{money(data.bankTotal)}</b></div>
-                  <div><span>Investimentos</span><b>{money(data.investmentsTotal)}</b></div>
-                  <div><span>Total</span><b>{money(data.bankTotal + data.investmentsTotal)}</b></div>
-                </div>
-                {data.investmentsTotal === 0 && (
-                  <small className="muted">Nenhum investimento veio da Pluggy para estes bancos.</small>
-                )}
-              </>
-            )}
-          </section>
-        </div>
-        )}
-      </div>
     </div>
+  );
+}
+
+/** Saldos de cada banco: contas, cartões e investimentos. */
+function BalancesCard({ data, pluggy, navigate }: { data: Dashboard; pluggy: PageProps['pluggy']; navigate: PageProps['navigate'] }) {
+  return (
+    <section className="card" aria-labelledby="saldos-titulo">
+      <div className="card-head">
+        <span className="title-row">
+          <h2 id="saldos-titulo">Saldos</h2>
+          <PluggyBadge {...pluggy} />
+        </span>
+      </div>
+      {data.banks.length === 0 ? (
+        <p className="muted">
+          Nenhum banco sincronizado. <button className="link-btn" onClick={() => navigate('config')}>Conectar bancos</button>
+        </p>
+      ) : (
+        <>
+          <div>
+            {data.banks.map((bank) => (
+              <div key={bank.itemId} className="bank-block">
+                <div className="bank-head">
+                  <BankAvatar label={bank.label} />
+                  <span className="grow"><b>{bank.label}</b></span>
+                  <span className="num" title="Contas + investimentos">{money(bank.bankBalance + bank.investmentsTotal)}</span>
+                </div>
+                <ul className="bank-lines">
+                  {bank.accounts.map((a) => (
+                    <li key={a.id}>
+                      <span className="muted">
+                        {a.type === 'CREDIT'
+                          ? `Cartão · fatura aberta${a.available_limit != null ? ` · disponível ${money(a.available_limit)}` : ''}`
+                          : a.name}
+                      </span>
+                      <span className="num">{a.type === 'CREDIT' ? `− ${money(a.balance)}` : money(a.balance)}</span>
+                    </li>
+                  ))}
+                  {bank.investments.length > 0 && (
+                    <li>
+                      <span className="muted">Investimentos ({bank.investments.length})</span>
+                      <span className="num">{money(bank.investmentsTotal)}</span>
+                    </li>
+                  )}
+                  {bank.investments.map((i) => (
+                    <li key={i.id} className="sub">
+                      <span>
+                        {i.name}
+                        {i.type && <span className="tag">{INVESTMENT_LABELS[i.type] ?? i.type}</span>}
+                        {i.due_date && <> · vence {shortDate(i.due_date)}/{i.due_date.slice(2, 4)}</>}
+                      </span>
+                      <span className="num" style={{ fontWeight: 600 }}>{money(i.balance)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="balance-totals">
+            <div><span>Em contas</span><b>{money(data.bankTotal)}</b></div>
+            <div><span>Investimentos</span><b>{money(data.investmentsTotal)}</b></div>
+            <div><span>Total</span><b>{money(data.bankTotal + data.investmentsTotal)}</b></div>
+          </div>
+          {data.investmentsTotal === 0 && (
+            <small className="muted">Nenhum investimento veio da Pluggy para estes bancos.</small>
+          )}
+        </>
+      )}
+    </section>
   );
 }

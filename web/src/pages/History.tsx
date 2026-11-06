@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api, METHOD_LABELS, type Dashboard, type Method, type Transaction, type YearSummary } from '../api.ts';
 import { currentMonth, money, monthLabel, shortDate } from '../format.ts';
 import { Icon, MethodBadge, SourceIcon, type Source } from '../icons.tsx';
 import { SpendBySource } from '../SpendBySource.tsx';
 import { YearChart } from '../YearChart.tsx';
+import { useIsMobile } from '../useMedia.ts';
 import type { PageProps } from '../App.tsx';
 
 const MONTH_NAMES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -21,6 +22,13 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
   const [data, setData] = useState<YearSummary | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const mobile = useIsMobile();
+  // No celular o detalhe fica bem abaixo da lista: tocar num mês rola até ele.
+  const [scrollTo, setScrollTo] = useState(false);
+  const pick = (m: string) => {
+    setSelected(m);
+    setScrollTo(mobile);
+  };
 
   useEffect(() => {
     api.get<YearSummary>(`/year?year=${year}`).then((d) => {
@@ -92,8 +100,26 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
       <section className="card" aria-labelledby="hist-meses">
         <div className="card-head">
           <h2 id="hist-meses">Mês a mês</h2>
-          <span className="sub">{banks && 'Saídas = dos bancos + por você · '}Clique num mês para ver os gastos</span>
+          <span className="sub">{banks && 'Saídas = dos bancos + por você · '}{mobile ? 'Toque' : 'Clique'} num mês para ver os gastos</span>
         </div>
+        {mobile ? (
+          <ul className="month-list">
+            {data.months.map((m, i) => {
+              const result = m.income - m.expenses;
+              return (
+                <li key={m.month}>
+                  <button type="button" className="month-row" disabled={!m.hasData} aria-pressed={m.month === selected} onClick={() => pick(m.month)}>
+                    <span className="grow">
+                      <b>{MONTH_NAMES[i]}</b>
+                      <small>{m.hasData ? `Entrou ${money(m.income)} · saiu ${money(m.expenses)}` : m.month > thisMonth ? 'Por vir' : 'Sem dados'}</small>
+                    </span>
+                    {m.hasData && <span className={`num ${result >= 0 ? 'good-text' : 'error-text'}`}>{money(result)}</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
         <div className="table-wrap">
           <table className="history-table" style={{ minWidth: banks ? 900 : 520 }}>
             <thead>
@@ -128,7 +154,7 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
                 return (
                   <tr key={m.month} className={`${m.month === selected ? 'selected' : ''} ${m.hasData ? '' : 'empty'}`}>
                     <td>
-                      <button type="button" className="month-link" disabled={!m.hasData} onClick={() => setSelected(m.month)}
+                      <button type="button" className="month-link" disabled={!m.hasData} onClick={() => pick(m.month)}
                         aria-pressed={m.month === selected}>
                         {MONTH_NAMES[i]}
                       </button>
@@ -175,18 +201,24 @@ export function HistoryPage({ month, version, openMonth }: PageProps) {
             </tfoot>
           </table>
         </div>
+        )}
       </section>
 
-      {selected && <MonthDetail month={selected} version={version} openMonth={openMonth} />}
+      {selected && <MonthDetail month={selected} version={version} openMonth={openMonth} scrollTo={scrollTo} />}
     </div>
   );
 }
 
 type TopItem = { key: string; description: string; amount: number; date: string; where: string; source: Source; method?: Method };
 
-function MonthDetail({ month, version, openMonth }: { month: string; version: number; openMonth: PageProps['openMonth'] }) {
+function MonthDetail({ month, version, openMonth, scrollTo }: { month: string; version: number; openMonth: PageProps['openMonth']; scrollTo: boolean }) {
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [txs, setTxs] = useState<Transaction[]>([]);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (scrollTo && dash?.month === month) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [scrollTo, month, dash]);
 
   useEffect(() => {
     api.get<Dashboard>(`/dashboard?month=${month}`).then(setDash, () => setDash(null));
@@ -201,7 +233,7 @@ function MonthDetail({ month, version, openMonth }: { month: string; version: nu
   ].sort((a, b) => b.amount - a.amount).slice(0, TOP_EXPENSES);
 
   return (
-    <section className="card" aria-labelledby="hist-detalhe">
+    <section ref={ref} className="card" aria-labelledby="hist-detalhe" style={{ scrollMarginTop: 16 }}>
       <div className="card-head">
         <div>
           <h2 id="hist-detalhe" className="cap">{monthLabel(month)}</h2>

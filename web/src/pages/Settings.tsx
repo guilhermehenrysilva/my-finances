@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { api, type ImportResult, type Settings } from '../api.ts';
 import { relativeTime } from '../format.ts';
 import { BankAvatar, Icon, PluggyBadge } from '../icons.tsx';
+import { ThemePicker } from '../theme.tsx';
 import type { PageProps } from '../App.tsx';
 
 export function SettingsPage({ version, refresh, pluggy }: PageProps) {
@@ -60,6 +61,16 @@ export function SettingsPage({ version, refresh, pluggy }: PageProps) {
           </div>
         </section>
       )}
+
+      <section className="card" aria-labelledby="aparencia-config">
+        <div className="card-head">
+          <div>
+            <h2 id="aparencia-config">Aparência</h2>
+            <span className="sub">Vale só para este navegador</span>
+          </div>
+          <div style={{ flex: '0 1 360px' }}><ThemePicker /></div>
+        </div>
+      </section>
 
       <section className="card">
         <span className="title-row"><h2>Bancos conectados</h2><PluggyBadge {...pluggy} /></span>
