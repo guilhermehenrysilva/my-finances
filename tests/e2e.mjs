@@ -112,6 +112,26 @@ await patch(`/bills/${inet.id}`, { paid: false });
 check('desmarcar baixa automática fica desmarcada', !(await get('/bills?month=2026-10')).json.find((b) => b.id === inet.id).paid_at);
 await patch(`/bills/${inet.id}`, { paid: true });
 
+// ---- Editar conta ----
+const cond = async (m) => (await get(`/bills?month=${m}`)).json.find((b) => b.description.startsWith('Condomínio'));
+const cond10 = await cond('2026-10');
+await get('/bills?month=2026-12'); // abre dezembro antes da edição
+check('editar fatura do cartão → 400', (await put(`/bills/${b10.find((b) => b.card_account_id).id}`, { description: 'X', dueDay: 1 })).status === 400);
+check('editar conta inexistente → 404', (await put('/bills/99999', { description: 'X', dueDay: 1 })).status === 404);
+check('editar sem descrição → 400', (await put(`/bills/${cond10.id}`, { description: ' ', dueDay: 1 })).status === 400);
+await put(`/bills/${cond10.id}`, { description: 'Condomínio só out', amount: 700, dueDay: 10, matchText: 'condominio', applyTo: 'month' });
+const c10 = await cond('2026-10');
+check('editar só este mês muda outubro', c10.description === 'Condomínio só out' && c10.amount === 700 && c10.due_date === '2026-10-10', c10);
+check('...e não muda novembro', (await cond('2026-11')).amount === 650);
+await put(`/bills/${(await cond('2026-11')).id}`, { description: 'Condomínio', amount: 720, dueDay: 31, matchText: 'condominio', applyTo: 'future' });
+check('editar daqui pra frente muda dezembro já aberto', (await cond('2026-12'))?.amount === 720);
+check('...e meses ainda não abertos', (await cond('2027-02'))?.amount === 720 && (await cond('2027-02')).due_date === '2027-02-28');
+check('...e não muda outubro', (await cond('2026-10')).amount === 700);
+// Volta aos valores originais para os testes de previsão abaixo.
+await put(`/bills/${cond10.id}`, { description: 'Condomínio', amount: 650, dueDay: 31, matchText: 'condominio', applyTo: 'month' });
+await put(`/bills/${(await cond('2026-11')).id}`, { description: 'Condomínio', amount: 650, dueDay: 31, matchText: 'condominio', applyTo: 'future' });
+check('conta paga continua paga depois de editar', !!(await cond('2026-10')).paid_at);
+
 // ---- Sugestões ----
 const sug = (await get('/bills/suggestions')).json;
 check('sugere Academia (3 meses)', sug.some((s) => s.key === 'academia fit'), sug);
